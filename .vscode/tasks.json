@@ -11,6 +11,22 @@
             "problemMatcher": [
                 "$msCompile"
             ]
+        },
+        {
+            "label": "Git: Prune Branches Not In Origin",
+            "type": "shell",
+            "command": "git branch -v|grep \\\\[gone\\\\]|awk '{print $1}'|xargs -I{} git branch -D {}",
+            "windows": {
+                "command": "sh -c \"git branch -v|grep \\\\[gone\\\\]|awk '{print $1}'|xargs -I{} git branch -D {}\"",
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "presentation": {
+              "close": true,
+              "revealProblems": "onProblem",
+              "reveal": "silent"
+            }
         }
     ]
 }
