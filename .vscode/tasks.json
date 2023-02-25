@@ -5,9 +5,8 @@
             "label": "Sail Up",
             "type": "shell",
             "command": "./vendor/bin/sail up -d",
-            "presentation": {
-                "reveal": "silent",
-                "panel": "new"
+            "runOptions": {
+              "runOn": "folderOpen"
             },
             "problemMatcher": [
                 "$msCompile"
