@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Jobs\InsertCsv;
+use App\Jobs\ExportCsv;
 use App\Models\Location;
 use App\Models\User;
 
@@ -44,22 +46,6 @@ class LocationController extends Controller
     public function show(string $id)
     {
         return Location::find($id);
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function export(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function download(Request $request)
-    {
-        //
     }
 
     /**
