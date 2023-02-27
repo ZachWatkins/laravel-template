@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use \App\Models\User;
+use \App\Models\Location;
 
 class DatabaseSeeder extends Seeder
 {
@@ -12,11 +13,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
+        $example = User::factory()->example()->make();
+        $user = User::where('name', $example->name)->firstOr(function () use ($example) {
+            $example->save();
+            return $example;
+        });
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        $count = Location::count();
+        if (!$count) {
+            Location::factory()->count(10)->state(fn ($attributes) => ['submitter_id' => $user->id])->create();
+        }
     }
 }
