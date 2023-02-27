@@ -23,7 +23,7 @@ class DownloadController extends Controller
 
         if (Storage::exists($directory . $request->input('file'))) {
             // Remove the file after it is downloaded.
-            dispatch(fn () => Storage::deleteDirectory($directory)->afterResponse();
+            dispatch(fn () => Storage::deleteDirectory($directory))->afterResponse();
 
             // Return the file.
             return response()->download(
@@ -32,6 +32,6 @@ class DownloadController extends Controller
             );
         }
 
-        return response()->json(['error' => 'File not found: ' . $path], 404);
+        return response()->json(['error' => 'File not found.'], 404);
     }
 }
