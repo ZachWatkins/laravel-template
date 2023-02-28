@@ -1,5 +1,12 @@
 {
 	"version": "2.0.0",
+    "windows": {
+        "options": {
+            "shell": {
+                "executable": "wsl.exe"
+            }
+        }
+    },
 	"tasks": [
         {
             "label": "Sail Up",
@@ -15,10 +22,20 @@
         {
             "label": "Git: Prune Branches Not In Origin",
             "type": "shell",
-            "command": "git branch -v|grep \\\\[gone\\\\]|awk '{print $1}'|xargs -I{} git branch -D {}",
-            "windows": {
-                "command": "sh -c \"git branch -v|grep \\\\[gone\\\\]|awk '{print $1}'|xargs -I{} git branch -D {}\"",
-            },
+            "command": "./bin/gitprune",
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "presentation": {
+              "close": true,
+              "revealProblems": "onProblem",
+              "reveal": "silent"
+            }
+        },
+        {
+            "label": "Git: Fetch Branches Not In Local",
+            "type": "shell",
+            "command": "./bin/gitfetch",
             "problemMatcher": [
                 "$msCompile"
             ],
