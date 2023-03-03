@@ -37,6 +37,10 @@ class ArchiveUserFiles implements ShouldQueue
      */
     public function handle(): void
     {
+        if (Storage::exists($this->directory . $this->filename)) {
+            Storage::delete($this->directory . $this->filename);
+        }
+
         // Get list of user files.
         $files = Storage::allFiles($this->directory);
 

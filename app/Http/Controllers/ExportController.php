@@ -7,14 +7,42 @@ use Illuminate\Support\Str;
 use App\Jobs\ExportModel;
 use App\Jobs\ArchiveUserFiles;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 
 class ExportController extends Controller
 {
     /**
+     * List available downloads.
+     */
+    public function index(Request $request)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            $example = User::factory()->example()->make();
+            $user = User::where('name', $example->name)->first();
+        }
+
+        $directory = "users/{$user->id}/";
+        $files = Storage::allFiles($directory);
+        foreach ($files as $key => $file) {
+            // Sign routes.
+            $files[$key] = Url::temporarySignedRoute(
+                'download',
+                now()->addMinutes(30),
+                [
+                    'user' => $user->id,
+                    'file' => str_replace($directory, '', $file),
+                ]
+            );
+        }
+        return $files;
+    }
+
+    /**
      * Handle the incoming request.
      */
-    public function __invoke(Request $request)
+    public function create(Request $request)
     {
         $user = auth()->user();
         if (!$user) {
@@ -25,7 +53,7 @@ class ExportController extends Controller
         // Define job parameters.
         $model = '\\App\\Models\\' . Str::studly($request->input('model'));
         $select = explode(',', $request->input('keys', ''));
-        $where = $this->whereUser($request, $user);
+        $where = $this->whereModelUser($request, $user);
 
         // Export the model to a CSV file.
         ExportModel::dispatchSync(
@@ -39,6 +67,7 @@ class ExportController extends Controller
         // Archive all files in the user's folder.
         ArchiveUserFiles::dispatchSync($user->id, $request->input('model') . '.zip');
 
+        // Create a signed route for authentication.
         $url = Url::temporarySignedRoute(
             'download',
             now()->addDays(3),
@@ -59,11 +88,13 @@ class ExportController extends Controller
      *
      * @return array
      */
-    protected function whereUser(Request $request, User $user): array
+    protected function whereModelUser(Request $request, User $user): array
     {
-        if ($request->input('model') === 'location') {
-            return ['submitter_id' => $user->id];
+        switch ($request->input('model')) {
+            case 'location':
+                return ['submitter_id' => $user->id];
+            default:
+                return [];
         }
-        return [];
     }
 }

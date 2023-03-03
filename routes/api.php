@@ -25,6 +25,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::resource('locations', LocationController::class);
 Route::post('/import', ImportController::class);
-Route::get('/export', ExportController::class);
+Route::get('/export', [ExportController::class, 'create']);
+Route::get('/exported', [ExportController::class, 'index']);
 Route::get('/download', DownloadController::class)
     ->name('download')->middleware('signed');
