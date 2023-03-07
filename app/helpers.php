@@ -1,149 +1,166 @@
 <?php
 use Illuminate\Support\Facades\DB;
 
-class DB_Timeout
+trait SetsPdoTimeout
 {
-    const NAMES = [
-        'PDO::SQLSRV_ATTR_QUERY_TIMEOUT',
-        'PDO::ATTR_TIMEOUT',
-    ];
+    private static string $pdo_timeout_config_key;
+    private static string $pdo_timeout_attribute;
+    private static $pdo_timeout_config_original;
 
-    private static array $stack = [];
-    private static string $name;
-    private static string $connection;
-    private static string $config_key;
-
-    public static function push(int $value): bool
+    private static function setPdoTimeout(int $value = -1)
     {
-        self::$stack[] = $value;
-        return self::set($value);
-    }
-
-    public static function pop(): int
-    {
-        if (1 === count(self::$stack)) {
-            return -1;
+        $key = self::$pdo_timeout_config_key || self::getPdoTimeoutConfigKey();
+        if ($value < 0) {
+            $value = self::$pdo_timeout_config_original;
         }
-        $old = array_pop(self::$stack);
-        $last = count(self::$stack) - 1;
-        self::set(self::$stack[$last]);
-        return $old;
-    }
-
-    public static function reset(bool $pdo = true): bool
-    {
-        if (1 >= count(self::$stack)) {
-            return false;
-        }
-        array_splice(self::$stack, 1);
-        self::set(self::$stack[0]);
-        if ($pdo) {
-            self::getPdo()->setAttribute(self::getName(), self::$stack[0]);
+        config([$key => $value]);
+        if (DB::connection() && DB::connection()->getPdo()) {
+            DB::connection()->getPdo()->setAttribute(self::$pdo_timeout_attribute, $value);
         }
     }
 
-    private static function set(int $value, bool $pdo = true)
+    private static function getPdoTimeoutConfigKey(): string
     {
-        config([self::$config_key => $value]);
-        if ($pdo) {
-            self::getPdo()->setAttribute(self::getName(), $value);
+        if (self::$pdo_timeout_config_key) {
+            return self::$pdo_timeout_config_key;
         }
+        $connection = config('database.default');
+        self::$pdo_timeout_config_key = 'database.connections.' . $connection . '.options.' . constant(self::getTimeoutAttrName());
+        $config_value = config(self::$pdo_timeout_config_key);
+        if (!is_numeric($config_value) || 0 > $config_value) {
+            $config_value = 0;
+        }
+        self::$pdo_timeout_config_original = $config_value;
+        return self::$pdo_timeout_config_key;
     }
 
-    private static function getName(): string
+    private static function getTimeoutAttrName(): string
     {
-        if (!self::$name) {
-            foreach (self::NAMES as $name) {
-                if (defined($name)) {
-                    try {
-                        $name_value = constant($name);
-                        self::$stack = [self::getPdo()->getAttribute($name_value)];
-                        self::$name = $name;
-                        self::$connection = config('database.default');
-                        self::$config_key = 'database.connections.' . self::$connection . '.options.' . $name_value;
-                        return self::$name;
-                    } catch (\Throwable $e) {}
-                }
+        if (self::$pdo_timeout_attribute) {
+            return self::$pdo_timeout_attribute;
+        }
+        // Ordered by vendor-specific first for feature detection.
+        $timeout_attrs = [
+            'PDO::SQLSRV_ATTR_QUERY_TIMEOUT',
+            'PDO::ATTR_TIMEOUT',
+        ];
+        foreach ($timeout_attrs as $attribute) {
+            if (!defined($attribute) || null === constant($attribute)) {
+                continue;
             }
-            self::$name = 'PDO::';
+            try {
+                if (DB::connection()->getPdo()) {
+                    // Test attribute support.
+                    $value = DB::connection()->getPdo()->getAttribute(constant($attribute));
+                    DB::connection()->getPdo()->setAttribute($attribute, $value + 1);
+                    DB::connection()->getPdo()->setAttribute($attribute, $value);
+                    return self::$pdo_timeout_attribute = $attribute;
+                }
+            } catch (\PDOException $e) {
+                continue;
+            }
         }
-        return self::$name;
-    }
-
-    private static function getPdo(): PDO
-    {
-        return DB::connection()->getPdo();
+        return self::$pdo_timeout_attribute = 'PDO::TIMEOUT_ATTR_UNDEFINED';
     }
 }
 
 class Retryable_Query
 {
-    const WAIT_MS = [5000, 6000, 10000, 15000, 30000, 60000];
-    const TIMEOUT_SEC = [15, 30, 45, 60, 75, 90];
-    const RECONNECT_TIMEOUT_SEC = [25, 30, 30, 45, 60, 120];
-    const RECONNECT_WAIT_MS = [5000, 6000, 10000, 15000, 30000, 60000];
+    use SetsPdoTimeout;
 
+    /**
+     * Handle a retryable query.
+     *
+     * @author  Zachary K. Watkins <zwatkins.it@gmail.com>
+     *
+     * @param callable $callable A callable function which includes a query.
+     * @param integer  $timeout  A parameter.
+     *
+     * @return void
+     */
     public static function handle(callable $callable, int $timeout = -1)
     {
-        if ($timeout >= 0) {
-            DB_Timeout::push($timeout);
-        }
+        self::setPdoTimeout($timeout);
         try {
             $result = $callable();
-            if ($timeout >= 0) {
-                DB_Timeout::pop();
-            }
+            self::setPdoTimeout();
             return $result;
-        } catch (\PDOException $e) {
-            if (!self::reconnect($e)) {
-                throw $e;
+        } catch (\PDOException $exception) {
+            if (!self::canRetry($exception) || !self::reconnect()) {
+                throw $exception;
             }
         }
 
-        $result = retry(
-            count(self::TIMEOUT_SEC),
-            fn () => $callable(),
-            fn ($attempt) =>
-                DB_Timeout::push(self::TIMEOUT_SEC[$attempt - 1])
-                && self::TIMEOUT_SEC[$attempt - 1],
-            fn ($exception) => self::isRetryable($exception)
-        );
+        $retryTimeout = function ($attempt) {
+            $jitter = \rand(110, 90) / 100;
+            $wait_ms = [5000, 8000, 15000, 30000, 60000];
+            $timeout_sec = [10, 15, 20, 30, 60];
+            self::setPdoTimeout($timeout_sec[$attempt - 1] * $jitter);
+            return $wait_ms[$attempt - 1] * $jitter;
+        };
 
-        DB_Timeout::reset();
+        $result = retry(6, $callable, $retryTimeout, fn ($exception) => self::canRetry($exception));
+
+        self::setPdoTimeout();
 
         return $result;
     }
 
-    private static function isRetryable(\PDOException $exception): bool
+    /**
+     * Attempt to reconnect to the database if an exception is retryable.
+     *
+     * @author Zachary K. Watkins <zwatkins.it@gmail.com>
+     *
+     * @return bool
+     */
+    private static function reconnect(): bool
     {
-        return false;
+        $i = 0;
+        $reconnector = function() use (&$i) {
+            $j = $i++;
+            $reconnect_timeout_sec = [25, 30, 45, 60, 120];
+            $reconnect_wait_sec = [5, 10, 15, 30, 60];
+            self::setPdoTimeout($reconnect_timeout_sec[$j]);
+            DB::disconnect();
+            sleep($reconnect_wait_sec[$j]);
+            DB::reconnect();
+            self::setPdoTimeout();
+            return true;
+        };
+
+        try {
+            return retry(6, $reconnector, 0, fn ($exception) => self::canRetry($exception));
+        } catch (\PDOException $exception) {
+            self::setPdoTimeout();
+            return false;
+        }
     }
 
-    private static function reconnect(\PDOException $e = null)
+    /**
+     * Reads PDOException error codes and compares them against the configured retryable codes.
+     *
+     * @author Zachary K. Watkins <zwatkins.it@gmail.com>
+     *
+     * @param \PDOException $exception The thrown exception.
+     *
+     * @return bool Whether the query can be retried.
+     */
+    private static function canRetry(\PDOException $exception): bool
     {
-        if (!self::isRetryable($e)) {
-            return false;
+        $dbconnection = config('database.default');
+        $retryable = config("database.connections.{$dbconnection}.retryable_codes", []);
+        $code = (string) $exception->getCode();
+        $subcode = (string) $exception->errorInfo[1];
+        $message = $exception->getMessage();
+        if (isset($retryable[$code])) {
+            if (true === $retryable[$code] || in_array($subcode, $retryable, true)) {
+                return true;
+            }
+        } elseif (false !== strpos($message, 'nable to connect')) {
+            return true;
+        } elseif (false !== strpos($message, 'onnection timed out')) {
+            return true;
         }
-        try {
-            $i = 0;
-            return retry(
-                count(self::RECONNECT_TIMEOUT_SEC),
-                function() use (&$i) {
-                    $j = $i++;
-                    DB::disconnect();
-                    DB_Timeout::push(self::RECONNECT_TIMEOUT_SEC[$j], false);
-                    sleep(self::RECONNECT_WAIT_MS[$j] / 1000);
-                    DB::reconnect();
-                    return true;
-                },
-                0,
-                function($exception) {
-                    return self::isRetryable($exception);
-                }
-            );
-        } catch (\PDOException $exception) {
-            DB_Timeout::reset(false);
-            return false;
-        }
+        return false;
     }
 }
