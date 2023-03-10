@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class ExportModel implements ShouldQueue
 {
@@ -25,17 +26,19 @@ class ExportModel implements ShouldQueue
      * Create a new job instance.
      *
      * @param int    $user_id   User ID.
+     * @param Carbon $now       Date when the job was dispatched.
      * @param string $filename  File name.
      * @param string $model     Model class string.
      * @param string $directory File directory.
      * @param array  $select    Model properties to export. Optional.
      * @param array  $where     Clauses which filter model records. Optional.
      */
-    public function __construct(int $user_id, string $filename, string $model, array $select = [], array $where = [])
+    public function __construct(int $user_id, Carbon $now, string $filename, string $model, array $select = [], array $where = [])
     {
+        $date = $now->format('Y-m-d');
+        $this->directory = "exports/{$date}/{$user_id}/";
         $this->filename = $filename;
         $this->modelClass = $model;
-        $this->directory = "users/{$user_id}/";
         $this->select = $select;
         $this->where = $where;
     }
@@ -54,15 +57,19 @@ class ExportModel implements ShouldQueue
         }
 
         $model = new $this->modelClass();
-        $headers = $this->select;
-        $query = $model::select($headers);
+        $query = $model;
 
-        if (!$this->select) {
+        if ($this->select) {
+            $query::select($this->select);
+            $headers = $this->select;
+            if ($this->where) {
+                $query->where($this->where);
+            }
+        } else {
             $headers = \Illuminate\Support\Facades\Schema::getColumnListing($model->getTable());
-        }
-
-        if ($this->where) {
-            $query->where($this->where);
+            if ($this->where) {
+                $query::where($this->where);
+            }
         }
 
         $stream = fopen(storage_path('app/' . $this->directory . $this->filename), 'w');

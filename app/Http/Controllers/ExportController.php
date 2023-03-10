@@ -23,16 +23,15 @@ class ExportController extends Controller
             $user = User::where('name', $example->name)->first();
         }
 
-        $directory = "users/{$user->id}/";
-        $files = Storage::allFiles($directory);
+        $files = glob(storage_path("app/exports/**/{$user->id}/*"));
         foreach ($files as $key => $file) {
             // Sign routes.
             $files[$key] = Url::temporarySignedRoute(
                 'download',
-                now()->addMinutes(30),
+                now()->addMinutes(3),
                 [
-                    'user' => $user->id,
-                    'file' => str_replace($directory, '', $file),
+                    'uid' => $user->id,
+                    'file' => basename($file),
                 ]
             );
         }
@@ -50,30 +49,34 @@ class ExportController extends Controller
             $user = User::where('name', $example->name)->first();
         }
 
-        // Define job parameters.
-        $model = '\\App\\Models\\' . Str::studly($request->input('model'));
-        $select = explode(',', $request->input('keys', ''));
-        $where = $this->whereModelUser($request, $user);
+        $select = array_filter(explode(',', $request->input('keys', '')));
 
         // Export the model to a CSV file.
+        $now = now();
         ExportModel::dispatchSync(
             $user->id,
-            $request->input('model') . '.csv',
-            $model,
+            $now,
+            $request->input('model', 'location') . '.csv',
+            '\\App\\Models\\' . Str::studly($request->input('model', 'location')),
             $select,
-            $where
+            $this->whereModelUser($request, $user)
         );
 
         // Archive all files in the user's folder.
-        ArchiveUserFiles::dispatchSync($user->id, $request->input('model') . '.zip');
+        ArchiveUserFiles::dispatchSync(
+            $user->id,
+            $now,
+            $request->input('model', 'location') . '.zip'
+        );
 
         // Create a signed route for authentication.
-        $url = Url::temporarySignedRoute(
+        $expires = $now->clone()->addDays(3);
+        $url = URL::temporarySignedRoute(
             'download',
-            now()->addDays(3),
+            $expires,
             [
-                'user' => $user->id,
-                'file' => $request->input('model') . '.zip',
+                'uid' => $user->id,
+                'file' => $request->input('model', 'location') . '.zip',
             ]
         );
 

@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class ArchiveUserFiles implements ShouldQueue
 {
@@ -22,14 +23,16 @@ class ArchiveUserFiles implements ShouldQueue
      * Create a new job instance.
      *
      * @param int    $user_id  User ID who archived the files.
+     * @param Carbon $now       Date when the job was dispatched.
      * @param array  $files    Files to archive.
      * @param string $filename Zip file path.
      */
-    public function __construct(int $user_id, string $filename)
+    public function __construct(int $user_id, Carbon $now, string $filename)
     {
+        $date = $now->format('Y-m-d');
+        $this->directory = "exports/{$date}/{$user_id}/";
         $this->user_id = $user_id;
         $this->filename = $filename;
-        $this->directory = "users/{$user_id}/";
     }
 
     /**
