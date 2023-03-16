@@ -23,7 +23,7 @@ class ZipUserFiles implements ShouldQueue
      *
      * @param int    $user_id          User ID.
      * @param string $destination      Destination zip file path.
-     * @param string $app_storage_path File pattern matched within the `/storage/app/` directory.
+     * @param string $source           File pattern matched within the user's storage directory.
      * @param string $delete_originals Whether to delete the original files after zipping.
      */
     public function __construct(int $user_id, string $destination, string $source, bool $delete_originals = true)
@@ -39,6 +39,8 @@ class ZipUserFiles implements ShouldQueue
      */
     public function handle(): void
     {
+        $this->createMissingDirectories();
+
         // Create the zip file.
         $zip = new \ZipArchive();
         $zip->open(
@@ -47,8 +49,7 @@ class ZipUserFiles implements ShouldQueue
         );
 
         // Add each user file to the archive.
-        $files = Storage::allFiles($this->source);
-        foreach ($files as $file) {
+        foreach ($this->getFiles() as $file) {
             $zip->addFile(
                 storage_path('app/' . $file),
                 str_replace("user/{$this->user_id}/", '', $file)
@@ -59,7 +60,36 @@ class ZipUserFiles implements ShouldQueue
 
         // Delete original files.
         if ($this->delete_originals) {
-            Storage::delete($this->source);
+            Storage::delete("user/{$this->user_id}/{$this->source}");
+        }
+    }
+
+    /**
+     * Handle each of a user's files.
+     *
+     * @return \Generator
+     */
+    private function getFiles(): \Generator
+    {
+        foreach (Storage::allFiles("user/{$this->user_id}/{$this->source}") as $file) {
+            yield $file;
+        }
+    }
+
+    /**
+     * Create directories recursively if missing from the destination.
+     */
+    public function createMissingDirectories(): void
+    {
+        $directories = explode('/', "{$this->user_id}/{$this->destination}");
+        // Remove the file name from the directory list.
+        array_pop($directories);
+        $current = 'user/';
+        foreach ($directories as $directory) {
+            $current .= $directory . '/';
+            if (!Storage::exists($current)) {
+                Storage::makeDirectory($current);
+            }
         }
     }
 }

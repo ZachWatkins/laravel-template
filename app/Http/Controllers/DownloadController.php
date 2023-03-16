@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use App\Models\User;
 use Illuminate\Support\Carbon;
+use App\Jobs\ExpireUserFiles;
 
 class DownloadController extends Controller
 {
@@ -14,31 +14,25 @@ class DownloadController extends Controller
      */
     public function __invoke(Request $request)
     {
+        $user_id = $request->input('uid');
+        $filename = $request->input('file');
         $expires = Carbon::createFromFormat('U', (int) $request->input('expires'));
         $date = $expires->clone()->addDays(-3)->format('Y-m-d');
-        $user_id = $request->input('uid');
-        $directory = "exports/{$date}/{$user_id}/";
+        $source = "user/{$user_id}/{$date}/{$filename}";
 
-        if (!Storage::exists($directory . $request->input('file'))) {
-
-            return response()->json(['error' => 'File not found:' . $directory . ' ' . $request->input('file')], 404);
-
+        if (!Storage::exists($source)) {
+            return response()->json(['error' => 'File not found:' . $request->input('file')], 404);
         }
 
         // Remove the file after it is downloaded.
-        dispatch(function () use ($directory, $request) {
-            Storage::delete($directory . $request->input('file'));
-            if (empty(Storage::allFiles($directory))) {
-                Storage::deleteDirectory($directory);
-                if (empty(Storage::allFiles($directory . '../'))) {
-                    Storage::deleteDirectory($directory . '../');
-                }
-            }
-        })->afterResponse();
+        ExpireUserFiles::dispatchAfterResponse(
+            $user_id,
+            ["{$date}/{$filename}"]
+        );
 
         // Return the file.
         return response()->download(
-            storage_path('app/' . $directory . $request->input('file')),
+            storage_path("app/{$source}"),
             $request->input('file')
         );
     }
