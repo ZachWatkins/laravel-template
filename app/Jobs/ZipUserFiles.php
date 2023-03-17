@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
+use App\Services\UserStorage;
 
 class ZipUserFiles implements ShouldQueue
 {
@@ -37,22 +38,22 @@ class ZipUserFiles implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(): void
+    public function handle(UserStorage $storage): void
     {
-        $this->createMissingDirectories();
+        $storage->makeDirectoriesRecursively($this->destination);
 
         // Create the zip file.
         $zip = new \ZipArchive();
         $zip->open(
-            storage_path("app/user/{$this->user_id}/{$this->destination}"),
+            $storage->appPath($this->destination),
             \ZipArchive::CREATE|\ZipArchive::OVERWRITE
         );
 
         // Add each user file to the archive.
-        foreach ($this->getFiles() as $file) {
+        foreach ($this->getFiles($storage) as $file) {
             $zip->addFile(
                 storage_path('app/' . $file),
-                str_replace("user/{$this->user_id}/", '', $file)
+                $storage->trimPath($file)
             );
         }
 
@@ -60,7 +61,7 @@ class ZipUserFiles implements ShouldQueue
 
         // Delete original files.
         if ($this->delete_originals) {
-            Storage::delete("user/{$this->user_id}/{$this->source}");
+            Storage::delete($storage->path($this->source));
         }
     }
 
@@ -69,27 +70,10 @@ class ZipUserFiles implements ShouldQueue
      *
      * @return \Generator
      */
-    private function getFiles(): \Generator
+    private function getFiles(UserStorage $storage): \Generator
     {
-        foreach (Storage::allFiles("user/{$this->user_id}/{$this->source}") as $file) {
+        foreach (Storage::allFiles($storage->path($this->source)) as $file) {
             yield $file;
-        }
-    }
-
-    /**
-     * Create directories recursively if missing from the destination.
-     */
-    public function createMissingDirectories(): void
-    {
-        $directories = explode('/', "{$this->user_id}/{$this->destination}");
-        // Remove the file name from the directory list.
-        array_pop($directories);
-        $current = 'user/';
-        foreach ($directories as $directory) {
-            $current .= $directory . '/';
-            if (!Storage::exists($current)) {
-                Storage::makeDirectory($current);
-            }
         }
     }
 }
