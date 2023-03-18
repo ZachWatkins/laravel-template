@@ -12,9 +12,6 @@
             "label": "Sail Up",
             "type": "shell",
             "command": "./vendor/bin/sail up -d",
-            "runOptions": {
-              "runOn": "folderOpen"
-            },
             "problemMatcher": [
                 "$msCompile"
             ]
