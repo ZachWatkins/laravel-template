@@ -16,12 +16,6 @@ class ExportUserModels implements ShouldQueue
 
     const CHUNK_SIZE = 500;
 
-    private string $user_id;
-    private string $destination;
-    private string $model;
-    private array $select;
-    private array $where;
-
     /**
      * Create a new job instance.
      *
@@ -31,23 +25,22 @@ class ExportUserModels implements ShouldQueue
      * @param array  $select      Model properties to export. Optional.
      * @param array  $where       Clauses which filter model records. Optional.
      */
-    public function __construct(int $user_id, string $destination, string $model, array $select = [], array $where = [])
-    {
-        $this->user_id = $user_id;
-        $this->destination = $destination;
-        $this->model = $model;
-        $this->select = $select;
-        $this->where = $where;
-    }
+    public function __construct(
+        private int $user_id,
+        private string $destination,
+        private string $model,
+        private array $select = [],
+        private array $where = []
+    ) {}
 
     /**
      * Execute the job.
      */
     public function handle(UserStorage $storage): void
     {
-        $storage->setUserID($this->user_id)
-            ->makeMissingDirectories($this->destination)
-            ->deleteIfExists($this->destination);
+        $storage->forUser($this->user_id)
+            ->createMissingDirectories($this->destination)
+            ->delete($this->destination);
 
         $model = new $this->model();
         $query = $model;
@@ -65,7 +58,7 @@ class ExportUserModels implements ShouldQueue
             }
         }
 
-        $stream = fopen($storage->fullPath($this->destination), 'w');
+        $stream = fopen($storage->dir . $this->destination, 'w');
         fputcsv($stream, $headers);
 
         foreach ($query->lazy(self::CHUNK_SIZE) as $model) {

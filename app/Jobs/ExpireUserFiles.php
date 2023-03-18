@@ -40,7 +40,7 @@ class ExpireUserFiles implements ShouldQueue
 
         // Delete folders if they are older than 3 days.
         $expires = strtotime('now - 3 days');
-        $files = glob($storage->fullPath('*'));
+        $files = glob($storage->dir . '*');
 
         foreach ($files as $file) {
             $date = strtotime(basename($file));

@@ -14,11 +14,6 @@ class ZipUserFiles implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private string $user_id;
-    private string $source;
-    private string $destination;
-    private bool $delete_originals;
-
     /**
      * Create a new job instance.
      *
@@ -27,25 +22,24 @@ class ZipUserFiles implements ShouldQueue
      * @param string $source           File pattern matched within the user's storage directory.
      * @param string $delete_originals Whether to delete the original files after zipping.
      */
-    public function __construct(int $user_id, string $destination, string $source, bool $delete_originals = true)
-    {
-        $this->user_id = $user_id;
-        $this->source = $source;
-        $this->destination = $destination;
-        $this->delete_originals = $delete_originals;
-    }
+    public function __construct(
+        private int $user_id,
+        private string $destination,
+        private string $source,
+        private bool $delete_originals = true
+    ) {}
 
     /**
      * Execute the job.
      */
     public function handle(UserStorage $storage): void
     {
-        $storage->makeDirectoriesRecursively($this->destination);
+        $storage->createMissingDirectories($this->destination);
 
         // Create the zip file.
         $zip = new \ZipArchive();
         $zip->open(
-            $storage->appPath($this->destination),
+            $storage->fullDir . $this->destination,
             \ZipArchive::CREATE|\ZipArchive::OVERWRITE
         );
 
@@ -53,7 +47,7 @@ class ZipUserFiles implements ShouldQueue
         foreach ($this->getFiles($storage) as $file) {
             $zip->addFile(
                 storage_path('app/' . $file),
-                $storage->trimPath($file)
+                str_replace($storage->dir, '', $file)
             );
         }
 
@@ -61,18 +55,18 @@ class ZipUserFiles implements ShouldQueue
 
         // Delete original files.
         if ($this->delete_originals) {
-            Storage::delete($storage->path($this->source));
+            $storage->delete($this->source);
         }
     }
 
     /**
-     * Handle each of a user's files.
+     * Handle each of a user's files, being mindful of memory consumption for large directories.
      *
      * @return \Generator
      */
     private function getFiles(UserStorage $storage): \Generator
     {
-        foreach (Storage::allFiles($storage->path($this->source)) as $file) {
+        foreach (Storage::allFiles($storage->dir . $this->source) as $file) {
             yield $file;
         }
     }
