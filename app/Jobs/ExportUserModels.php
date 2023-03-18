@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Storage;
+use App\Services\UserStorage;
 use Carbon\Carbon;
 
 class ExportUserModels implements ShouldQueue
@@ -43,10 +43,11 @@ class ExportUserModels implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(): void
+    public function handle(UserStorage $storage): void
     {
-        $this->createMissingDirectories();
-        $this->deleteExistingFile();
+        $storage->setUserID($this->user_id)
+            ->makeMissingDirectories($this->destination)
+            ->deleteIfExists($this->destination);
 
         $model = new $this->model();
         $query = $model;
@@ -64,7 +65,7 @@ class ExportUserModels implements ShouldQueue
             }
         }
 
-        $stream = fopen(storage_path("app/user/{$this->user_id}/{$this->destination}"), 'w');
+        $stream = fopen($storage->fullPath($this->destination), 'w');
         fputcsv($stream, $headers);
 
         foreach ($query->lazy(self::CHUNK_SIZE) as $model) {
@@ -72,35 +73,5 @@ class ExportUserModels implements ShouldQueue
         }
 
         fclose($stream);
-    }
-
-    /**
-     * Create directories recursively if missing from the destination.
-     */
-    private function createMissingDirectories(): void
-    {
-        $directories = explode('/', "{$this->user_id}/{$this->destination}");
-        // Remove the file name from the directory list.
-        array_pop($directories);
-        $current = 'user/';
-        foreach ($directories as $directory) {
-            $current .= $directory . '/';
-            if (!Storage::exists($current)) {
-                Storage::makeDirectory($current);
-            }
-        }
-    }
-
-    /**
-     * Delete the destination file if it exists.
-     *
-     * @return void
-     */
-    private function deleteExistingFile(): void
-    {
-        $path = "user/{$this->user_id}/{$this->destination}";
-        if (Storage::exists($path)) {
-            Storage::delete($path);
-        }
     }
 }

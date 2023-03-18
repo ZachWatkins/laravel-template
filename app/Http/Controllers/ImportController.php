@@ -14,14 +14,16 @@ class ImportController extends Controller
      */
     public function __invoke(Request $request)
     {
-        $file = $request->input('file', 'storage/app/public/import.csv');
+        $file = $request->input('file');
         $user = auth()->user();
         if (!$user) {
+            // Test mode.
             $example = User::factory()->example()->make();
             $user = User::where('name', $example->name)->first();
+            $file = 'storage/app/public/import.csv';
         }
         ImportModel::dispatch(
-            'storage/app/public/import.csv',
+            $file,
             Location::class,
             ['submitter_id' => $user->id]
         );

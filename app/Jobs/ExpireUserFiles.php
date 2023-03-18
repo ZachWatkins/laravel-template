@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Storage;
+use App\Services\UserStorage;
 
 class ExpireUserFiles implements ShouldQueue
 {
@@ -31,18 +31,21 @@ class ExpireUserFiles implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(): void
+    public function handle(UserStorage $storage): void
     {
+        // Delete files if they are explicitly listed for deletion.
         foreach ($this->files as $file) {
-            Storage::delete("user/{$this->user_id}/{$file}");
+            $storage->delete($file);
         }
 
+        // Delete folders if they are older than 3 days.
         $expires = strtotime('now - 3 days');
-        $files = glob(storage_path("app/user/{$this->user_id}/*"));
+        $files = glob($storage->fullPath('*'));
+
         foreach ($files as $file) {
             $date = strtotime(basename($file));
             if ($date < $expires) {
-                Storage::deleteDirectory("app/user/{$this->user_id}/{$date}");
+                $storage->deleteDirectory($date);
             }
         }
     }
