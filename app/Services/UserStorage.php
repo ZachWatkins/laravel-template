@@ -13,17 +13,45 @@ class UserStorage
      */
     private array $attributes = ['id', 'dir', 'fullDir'];
 
+    /**
+     * User ID.
+     *
+     * @var int
+     */
+    private int $idAttribute;
+
     public function __get($name)
     {
+        if ('id' === $name) {
+            return strval($this->idAttribute);
+        }
         return in_array($name, $this->attributes, true) ? $this->$name() : null;
     }
 
-    /**
-     * Get the user ID or an empty string if not logged in.
-     */
-    private function id(): string
+    public function __set($name, $value)
     {
-        return Auth::check() ? (string) Auth::id() : '0';
+        if ('id' === $name) {
+            $this->setUserID($value);
+        }
+    }
+
+    /**
+     * Set the user ID.
+     *
+     * @param int $id User ID.
+     *
+     * @return this
+     */
+    public function setUserID(int $id = -1): UserStorage
+    {
+        if ($id >= 0) {
+            $this->idAttribute = $id;
+        } elseif (Auth::check()) {
+            $this->idAttribute = Auth::id();
+        } else {
+            unset($this->idAttribute);
+        }
+        return $this;
     }
 
     /**
@@ -109,9 +137,9 @@ class UserStorage
      *
      * @param string $path File path within a user's folder.
      *
-     * @return void
+     * @return this
      */
-    public function makeMissingDirectories(string $path): void
+    public function makeMissingDirectories(string $path): UserStorage
     {
         // Make the user's root directory if it does not exist.
         $this->makeDir();
@@ -132,6 +160,8 @@ class UserStorage
                 Storage::makeDirectory($current);
             }
         }
+
+        return $this;
     }
 
     /**
@@ -145,5 +175,25 @@ class UserStorage
         if (Storage::exists($path)) {
             Storage::delete($path);
         }
+    }
+
+    /**
+     * Delete the destination file.
+     *
+     * @return bool
+     */
+    public function delete(string $path): bool
+    {
+        return Storage::delete($this->path($path));
+    }
+
+    /**
+     * Delete the destination directory within the user's folder.
+     *
+     * @return bool
+     */
+    public function deleteDirectory(string $path)
+    {
+        return Storage::deleteDirectory($this->path($path));
     }
 }
