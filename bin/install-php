@@ -13,5 +13,5 @@ ${SUDO} sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] ht
 ${SUDO} apt-get update
 ${SUDO} apt install php8.2 -y
 # Install required PHP extensions for Laravel 10.
-${SUDO} apt install php8.2-{ctype,curl,dom,fileinfo,filter,hash,mbstring,openssl,pcre,pdo,session,tokenizer,xml,zip,redis,sqlite3,mysql}
+${SUDO} apt install php8.2-{ctype,curl,dom,fileinfo,filter,hash,mbstring,openssl,pcre,pdo,session,tokenizer,xml,zip,sqlite3,mysql}
 php -v
