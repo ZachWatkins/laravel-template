@@ -23,7 +23,6 @@ This application is a starting point for building an authenticated API with Lara
 `/logout/` Logout (POST)
 `/email/resend/` (Email Resend)
 `/profile/password/reset/{token}` (Password Reset)
-`/dashboard/horizon/` (Laravel Horizon dashboard)
 
 ### Authenticated API Routes
 

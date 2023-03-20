@@ -14,4 +14,4 @@ cp /var/www/html/laravel-worker.conf /etc/supervisor/conf.d/laravel-worker.conf
 # Refresh process using configuration file.
 supervisorctl reread
 supervisorctl update
-supervisorctl start horizon
+supervisorctl start laravel-worker:*
