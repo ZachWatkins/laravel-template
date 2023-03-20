@@ -19,13 +19,13 @@ use Illuminate\Routing\Middleware\ValidateSignature;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/api/user/me', function (Request $request) {
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
 Route::resource('locations', LocationController::class);
-Route::post('/api/import', ImportController::class);
-Route::get('/api/export', [ExportController::class, 'index']);
-Route::get('/api/export/create', [ExportController::class, 'create']);
-Route::get('/api/download', DownloadController::class)
+Route::post('/import', ImportController::class);
+Route::get('/export', [ExportController::class, 'index']);
+Route::get('/export/create', [ExportController::class, 'create']);
+Route::get('/download', DownloadController::class)
     ->name('download')->middleware('signed');
