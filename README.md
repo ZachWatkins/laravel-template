@@ -1,6 +1,19 @@
 # Laravel Template
 
-This application is a starting point for building an authenticated API with Laravel. It uses React for UI rendering logic.
+```bash
+$ sail artisan inspire
+
+“ It is not the man who has too little, but the man who craves more, that is poor. ”
+— Seneca
+
+```
+
+This application is as small of a starting point as I can come up with for building an authenticated API with Laravel. It uses:
+
+1. __Laravel Breeze Package__ for user registration, login, authentication, and profile management.
+2. __Laravel Sanctum Package__ for API authentication and token management.
+3. __Laravel Sail Package__ for local development.
+4. __Laravel Queues__ for performing tasks asynchronously.
 
 ## Routes
 
