@@ -5,10 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Jobs\InsertCsv;
 use App\Jobs\ExportCsv;
-use App\Models\Location;
+use App\Models\Model;
 use App\Models\User;
 
-class LocationController extends Controller
+class ModelController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -21,7 +21,7 @@ class LocationController extends Controller
             $user = User::where('name', $example->name)->first();
         }
 
-        return $user->locations;
+        return $user->Models;
     }
 
     /**
@@ -37,7 +37,7 @@ class LocationController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Model::create($request->all());
     }
 
     /**
@@ -45,7 +45,7 @@ class LocationController extends Controller
      */
     public function show(string $id)
     {
-        return Location::find($id);
+        return Model::find($id);
     }
 
     /**
@@ -61,7 +61,7 @@ class LocationController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        Model::find(intval($id))->update($request->all());
     }
 
     /**
@@ -69,6 +69,6 @@ class LocationController extends Controller
      */
     public function destroy(string $id)
     {
-        Location::destroy(intval($id));
+        Model::destroy(intval($id));
     }
 }
