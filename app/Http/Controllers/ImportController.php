@@ -25,7 +25,7 @@ class ImportController extends Controller
         ImportModel::dispatch(
             $file,
             Location::class,
-            ['submitter_id' => $user->id]
+            ['user_id' => $user->id]
         );
     }
 }

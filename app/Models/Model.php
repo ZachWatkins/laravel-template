@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model as BaseModel;
 use App\Models\User;
 
-class Location extends Model
+class Model extends BaseModel
 {
     use HasFactory;
 
@@ -20,16 +20,17 @@ class Location extends Model
     protected $fillable = [
         'name',
         'date',
+        'location',
         'lat',
         'long',
-        'submitter_id',
+        'user_id',
     ];
 
     /**
      * Get the comments for the blog post.
      */
-    public function submitter(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'submitter_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

@@ -87,7 +87,7 @@ class ExportController extends Controller
     {
         switch ($request->input('model')) {
             case 'location':
-                return ['submitter_id' => $user->id];
+                return ['user_id' => $user->id];
             default:
                 return [];
         }
