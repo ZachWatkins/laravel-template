@@ -1,0 +1,70 @@
+name: Pull Request Synchronized
+
+on:
+  pull_request:
+    types: [synchronize]
+  pull_request_target:
+    branches: [master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --no-suggest --optimize-autoloader
+      - name: Run tests
+        run: php artisan test
+  comment-failed-test:
+    needs: test
+    runs-on: ubuntu-latest
+    if: ${{ needs.test.result == 'failure' }}
+    steps:
+      - name: Note failed test in pull request
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'One or more tests have failed. Please check the step that failed and address it in your pull request.'
+            })
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --prefer-dist --no-suggest --optimize-autoloader
+      - name: Install Node dependencies
+        run: npm install
+      - name: Build assets
+        run: npm run build
+  comment-failed-build:
+    needs: build
+    runs-on: ubuntu-latest
+    if: ${{ needs.build.result == 'failure' }}
+    steps:
+      - name: Note failed build in pull request
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'One or more build steps have failed. Please check the step that failed and address it in your pull request.'
+            })
