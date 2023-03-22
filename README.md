@@ -8,43 +8,66 @@ $ sail artisan inspire
 
 ```
 
-This application is as small of a starting point as I can come up with for building an authenticated API with Laravel. It uses the following Laravel packages and features:
+This application is a starting point for building an authenticated API with the [Laravel](https://laravel.com/) PHP framework.
 
-1. __Laravel Breeze (Package)__ for user registration, login, authentication, and profile management.
-2. __Laravel Sanctum (Package)__ for API authentication and token management.
-3. __Laravel Sail (Package)__ for local development.
-4. __Laravel Queues__ for performing tasks asynchronously.
+- [Features](#features)
+- [Routes](#routes)
+- [Development](#development)
+
+## Features
+
+Laravel first-party packages and features:
+
+1. __Breeze (Laravel Package)__ for user registration, login, authentication, and profile management. Also includes PHPUnit tests for authentication features.
+2. __Sanctum (Laravel Package)__ for API authentication and token management.
+3. __Sail (Laravel Package)__ for local development.
+4. __Queues__ for performing tasks asynchronously.
+5. __Migrations__ for database schema management.
+6. __Tests__ for peace of mind.
+
+My own features:
+
+1. __User Storage Service Class__ simplifies storing each user's files in their own folder. This is useful for managing user uploads.
+2. __Generic Model Class__ demonstrates how Laravel registers, creates, and retrieves database table records.
 
 ## Routes
+
+- [Public Web Routes](#public-web-routes)
+- [Guest Web Routes](#guest-web-routes)
+- [Authenticated Web Routes](#authenticated-web-routes)
 
 ### Public Web Routes
 
 | Verb      | URI                 | Action  | Route Name
 | GET       | `/`                 | view    | welcome
+
+### Guest Web Routes
+
+| Verb      | URI                 | Action  | Route Name
 | GET       | `/register`         | create  | register
 | POST      | `/register`         | store   | -
 | GET       | `/login`            | create  | login
 | POST      | `/login`            | store   | -
-| POST      | `/logout`           | destroy | logout
-| PUT       | `/password`         | update  | password.update
 | GET       | `/forgot-password`  | create  | password.request
 | POST      | `/forgot-password`  | store   | password.email
 | GET       | `/reset-password`   | create  | password.reset
 | POST      | `/reset-password`   | store   | password.update
-| GET       | `/verify-email`     | create  | verification.notice
-| POST      | `/email/verification-notification` | store | verification.send
-| GET       | `/verify-email/{id}/{hash}` | create | verification.verify
-| POST      | `/verify-email/{id}/{hash}` | store | -
-| GET       | `/confirm-password` | create  | password.confirm
-| POST      | `/confirm-password` | store   | -
 
 ### Authenticated Web Routes
 
-| Verb      | URI                 | Action  | Route Name
-| GET       | `/admin/`           | view    | dashboard
-| GET       | `/admin/profile`    | view    | profile.edit
-| PATCH     | `/admin/profile`    | update  | profile.update
-| DELETE    | `/admin/profile`    | destroy | profile.destroy
+| Verb      | URI                          | Action  | Route Name
+| GET       | `/verify-email`              | create  | verification.notice
+| GET       | `/verify-email/{id}/{hash}`  | create | verification.verify
+| POST      | `/verify-email/{id}/{hash}`  | store | -
+| POST      | `/verify-email-notification` | store | verification.send
+| GET       | `/confirm-password`          | create  | password.confirm
+| POST      | `/confirm-password`          | store   | -
+| PUT       | `/password`                  | update  | password.update
+| POST      | `/logout`                    | destroy | logout
+| GET       | `/admin/`                    | view    | dashboard
+| GET       | `/profile`                   | view    | profile.edit
+| PATCH     | `/profile`                   | update  | profile.update
+| DELETE    | `/profile`                   | destroy | profile.destroy
 
 ### Authenticated API Routes
 
@@ -58,10 +81,19 @@ This application is as small of a starting point as I can come up with for build
 | PUT/PATCH | `/models/{id}`      | update  | photos.update
 | DELETE    | `/models/{id}`      | destroy | photos.destroy
 
-### Local Development Routes
+## Development
 
-`localhost:80` (Web)
-`localhost:8025` (Mailpit)
+
+### Laravel Sail
+
+This application uses [Laravel Sail](https://laravel.com/docs/8.x/sail) for local development. Laravel Sail is a Docker-based development environment for Laravel. It provides a minimal Linux environment with all of the services and features you need to develop a Laravel application.
+
+If you are using Windows and want to run the application locally, you will need to install [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
+
+### URLs
+
+`http://localhost:80` (Web)
+`http://localhost:8025` (Mailpit)
 
 ## Documentation
 
