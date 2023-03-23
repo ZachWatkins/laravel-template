@@ -32,26 +32,71 @@
             @endif
 
             <div class="max-w-7xl mx-auto p-6 lg:p-8">
+                <!-- List public routes. -->
+                @php($publicRoutes = [
+                    'Welcome' => 'welcome',
+                    'Login' => 'login',
+                    'Register' => 'register',
+                    'Forgot Password' => 'password.request',
+                    'Confirm Password' => 'password.confirm',
+                ])
                 <div class="flex justify-center">
                     <nav>
                         <ul class="flex flex-col sm:flex-row">
-                            <li class="flex-1">
-                                <a href="http://localhost:80" class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Home</a>
-                            </li>
-                            <li class="flex-1 ml-4">
-                                <a href="#" class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Guest</a>
-                            </li>
-                            <li class="flex-1 ml-4">
-                                <a href="/profile" class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">User</a>
-                            </li>
-                            <li class="flex-1 ml-4">
-                                <a href="/api/" class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">API</a>
-                            </li>
+                            @php($class = 'flex-1')
+                            @foreach ($publicRoutes as $label => $name)
+                                <li class="{{ $class }}">
+                                    <a href="{{ route($name) }}" class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">{{ $label }}</a>
+                                </li>
+                                @php($class = 'flex-1 ml-4')
+                            @endforeach
+                            <!-- List local development routes. -->
                             @if (App::environment('local'))
                                 <li class="flex-1 ml-4">
                                     <a href="http://localhost:8025" class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Mailpit</a>
                                 </li>
                             @endif
+                        </ul>
+                    </nav>
+                </div>
+                <!-- List authenticated routes. -->
+                @auth
+                    @php($authenticatedRoutes = [
+                        'Dashboard' => 'dashboard',
+                        'Profile' => 'profile.edit',
+                        'Logout' => 'logout',
+                    ])
+                    <div class="flex justify-center mt-16">
+                        <nav>
+                            <ul class="flex flex-col sm:flex-row">
+                                @php($class = 'flex-1')
+                                @foreach ($authenticatedRoutes as $label => $name)
+                                    <li class="{{ $class }}">
+                                        <a href="{{ route($name) }}" class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">{{ $label }}</a>
+                                    </li>
+                                    @php($class = 'flex-1 ml-4')
+                                @endforeach
+                            </ul>
+                        </nav>
+                    </div>
+                @endauth
+                <!-- List API routes. -->
+                @php($apiRoutes = [
+                    'Get User Data' => 'api.user',
+                    'List User Exports' => 'api.index-export',
+                    'Create User Export' => 'api.create-export',
+                    'Download' => 'api.download',
+                ])
+                <div class="flex justify-center mt-4">
+                    <nav>
+                        <ul class="flex flex-col sm:flex-row">
+                            @php($class = 'flex-1')
+                            @foreach ($apiRoutes as $label => $name)
+                                <li class="{{ $class }}">
+                                    <a href="{{ route($name) }}" class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">{{ $label }}</a>
+                                </li>
+                                @php($class = 'flex-1 ml-4')
+                            @endforeach
                         </ul>
                     </nav>
                 </div>
