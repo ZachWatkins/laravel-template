@@ -38,28 +38,28 @@ My own features:
 
 ### Public Web Routes
 
-| Verb      | URI                 | Action  | Route Name
-| GET       | `/`                 | view    | welcome
+| Verb | URI | Action | Route Name
+| GET  | `/` | view   | welcome
 
 ### Guest Web Routes
 
-| Verb      | URI                 | Action  | Route Name
-| GET       | `/register`         | create  | register
-| POST      | `/register`         | store   | -
-| GET       | `/login`            | create  | login
-| POST      | `/login`            | store   | -
-| GET       | `/forgot-password`  | create  | password.request
-| POST      | `/forgot-password`  | store   | password.email
-| GET       | `/reset-password`   | create  | password.reset
-| POST      | `/reset-password`   | store   | password.update
+| Verb      | URI                | Action  | Route Name
+| GET       | `/register`        | create  | register
+| POST      | `/register`        | store   | -
+| GET       | `/login`           | create  | login
+| POST      | `/login`           | store   | -
+| GET       | `/forgot-password` | create  | password.request
+| POST      | `/forgot-password` | store   | password.email
+| GET       | `/reset-password`  | create  | password.reset
+| POST      | `/reset-password`  | store   | password.update
 
 ### Authenticated Web Routes
 
 | Verb      | URI                          | Action  | Route Name
 | GET       | `/verify-email`              | create  | verification.notice
-| GET       | `/verify-email/{id}/{hash}`  | create | verification.verify
-| POST      | `/verify-email/{id}/{hash}`  | store | -
-| POST      | `/verify-email-notification` | store | verification.send
+| GET       | `/verify-email/{id}/{hash}`  | create  | verification.verify
+| POST      | `/verify-email/{id}/{hash}`  | store   | -
+| POST      | `/verify-email-notification` | store   | verification.send
 | GET       | `/confirm-password`          | create  | password.confirm
 | POST      | `/confirm-password`          | store   | -
 | PUT       | `/password`                  | update  | password.update
