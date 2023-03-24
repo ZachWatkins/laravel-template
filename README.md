@@ -64,7 +64,7 @@ My own features:
 | POST      | `/confirm-password`          | store   | -
 | PUT       | `/password`                  | update  | password.update
 | POST      | `/logout`                    | destroy | logout
-| GET       | `/admin/`                    | view    | dashboard
+| GET       | `/dashboard/`                | view    | dashboard
 | GET       | `/profile`                   | view    | profile.edit
 | PATCH     | `/profile`                   | update  | profile.update
 | DELETE    | `/profile`                   | destroy | profile.destroy
