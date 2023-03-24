@@ -4,21 +4,19 @@
             "path": "."
         }
     ],
-	"settings": {
-		"terminal.integrated.defaultProfile.windows": "Ubuntu (WSL)"
-	},
     "tasks": {
         "version": "2.0.0",
         "tasks": [
             {
-                "label": "Launch Sail",
-                "dependsOrder": "sequence",
-                "dependsOn": [
-                    "Start Docker Desktop",
-                    "Sail Up"
-                ],
-                "runOptions": {
-                    "runOn": "folderOpen"
+                "label": "Start Docker Desktop",
+                "type": "shell",
+                "command": "start",
+                "args": ["docker"],
+                "windows": {
+                    "command": "Start-Process",
+                    "args": [
+                        "C:\\Program Files\\Docker\\Docker\\Docker Desktop.exe"
+                    ],
                 },
             },
             {
@@ -28,29 +26,60 @@
                 "args": ["up", "-d"],
                 "problemMatcher": [
                     "$msCompile"
-                ]
-            },
-            {
-                "label": "Start Docker Desktop",
-                "type": "shell",
-                "command": "start",
-                "args": ["docker"],
+                ],
                 "windows": {
-                    "command": "Start-Process",
-                    "args": [
-                        "C:\\\\Program Files\\Docker\\Docker\\Docker Desktop.exe"
-                    ],
+                    "command": "pwd",
+                    "args": [],
                     "options": {
                         "shell": {
-                            "executable": "powershell.exe",
+                            "executable": "C:\\Windows\\system32\\wsl.exe",
                             "args": [
-                                "-ExecutionPolicy",
-                                "Bypass"
+                                "--cd",
+                                "${workspaceFolder}"
                             ]
                         }
-                    },
+                    }
                 },
             },
+            {
+                "label": "Git: Prune Branches Not In Origin",
+                "type": "shell",
+                "command": "./bin/gitprune",
+                "problemMatcher": [
+                    "$msCompile"
+                ],
+                "presentation": {
+                  "close": true,
+                  "revealProblems": "onProblem",
+                  "reveal": "silent"
+                },
+                "windows": {
+                    "options": {
+                        "shell": {
+                            "executable": "C:\\Windows\\system32\\wsl.exe",
+                        }
+                    }
+                },
+            },
+            {
+                "label": "Git: Fetch Branches Not In Local",
+                "type": "shell",
+                "command": "./bin/gitfetch",
+                "problemMatcher": [
+                    "$msCompile"
+                ],
+                "presentation": {
+                    "revealProblems": "onProblem",
+                    "reveal": "silent"
+                },
+                "windows": {
+                    "options": {
+                        "shell": {
+                            "executable": "C:\\Windows\\system32\\wsl.exe",
+                        }
+                    }
+                },
+            }
         ]
     }
 }
