@@ -3,8 +3,9 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use App\Interfaces\UserStorageInterface;
 
-class UserStorage
+class UserStorage implements UserStorageInterface
 {
     /**
      * User ID.
@@ -100,28 +101,41 @@ class UserStorage
     }
 
     /**
+     * Detect whether the file or folder exists.
+     */
+    public function exists(string $path): bool
+    {
+        $isDirectory = \strpos($path, '/', -1) !== false
+            || \strpos(basename($path), '.') === false;
+
+        return $isDirectory
+            ? Storage::directoryExists($this->dir . $path)
+            : Storage::exists($this->dir . $path);
+    }
+
+    /**
      * Delete the destination file.
+     * Assumes a path without a trailing slash or file extension is a directory.
      *
      * @return bool
      */
     public function delete(string $path, bool $quiet = false): bool
     {
-        if (!$quiet) {
-            return Storage::delete($this->dir . $path);
-        }
-        if (Storage::exists($this->dir . $path)) {
-            return Storage::delete($this->dir . $path);
-        }
-        return false;
-    }
+        $isDirectory = \strpos($path, '/', -1) !== false
+            || \strpos(basename($path), '.') === false;
 
-    /**
-     * Delete the destination directory within the user's folder.
-     *
-     * @return bool
-     */
-    public function deleteDirectory(string $path)
-    {
-        return Storage::deleteDirectory($this->dir . $path);
+        if (!$quiet) {
+            return $isDirectory
+                ? Storage::deleteDirectory($this->dir . $path)
+                : Storage::delete($this->dir . $path);
+        }
+
+        if (!$this->exists($path)) {
+            return false;
+        }
+
+        return $isDirectory
+            ? Storage::deleteDirectory($this->dir . $path)
+            : Storage::delete($this->dir . $path);
     }
 }
