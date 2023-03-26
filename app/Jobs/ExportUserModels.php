@@ -39,7 +39,7 @@ class ExportUserModels implements ShouldQueue
     public function handle(UserStorage $storage): void
     {
         $storage->forUser($this->user_id)
-            ->createMissingDirectories($this->destination)
+            ->ensureDirectoryExists($this->destination)
             ->delete($this->destination);
 
         $model = new $this->model();

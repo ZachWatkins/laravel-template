@@ -34,7 +34,7 @@ class ZipUserFiles implements ShouldQueue
      */
     public function handle(UserStorage $storage): void
     {
-        $storage->createMissingDirectories($this->destination);
+        $storage->ensureDirectoryExists($this->destination);
 
         // Create the zip file.
         $zip = new \ZipArchive();

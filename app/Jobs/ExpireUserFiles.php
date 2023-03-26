@@ -33,20 +33,24 @@ class ExpireUserFiles implements ShouldQueue
      */
     public function handle(UserStorage $storage): void
     {
-        // Delete files if they are explicitly listed for deletion.
-        foreach ($this->files as $file) {
+        $storage->setUser($this->user_id);
+
+        foreach ($this->files() as $file) {
             $storage->delete($file);
         }
 
-        // Delete folders if they are older than 3 days.
-        $expires = strtotime('now - 3 days');
-        $files = glob($storage->dir . '*');
+        $storage->deleteFilesBefore('now - 3 days');
+    }
 
-        foreach ($files as $file) {
-            $date = strtotime(basename($file));
-            if ($date < $expires) {
-                $storage->deleteDirectory($date);
-            }
+    /**
+     * Get the files to delete.
+     *
+     * @return \Generator
+     */
+    private function files(): \Generator
+    {
+        foreach ($this->files as $file) {
+            yield $file;
         }
     }
 }

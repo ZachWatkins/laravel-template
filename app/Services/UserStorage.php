@@ -54,9 +54,9 @@ class UserStorage implements UserStorageInterface
      *
      * @param int $id User ID.
      *
-     * @return UserStorage
+     * @return UserStorage The current instance.
      */
-    public function forUser(int $id = -1): UserStorage
+    public function setUser(int $id = -1): UserStorage
     {
         if ($id >= 0) {
             $this->id = $id;
@@ -74,25 +74,29 @@ class UserStorage implements UserStorageInterface
      * Create directories recursively if missing from the destination.
      * We assume the directory `storage/app/user/` exists.
      *
-     * @param string $path File path within a user's folder.
+     * @param string $path      File or directory path within a user's directory.
+     * @param bool   $recursive Whether to create directories recursively.
      *
-     * @return UserStorage
+     * @return UserStorage The current instance.
      */
-    public function createMissingDirectories(string $path): UserStorage
+    public function makeDirectory(string $path, bool $recursive = true): UserStorage
     {
         // Remove the file name from the path if it is present.
-        $basename = basename($path);
-        if (\strpos($basename, '.') !== false) {
-            $path = str_replace($basename, '', $path);
+        if (!$this->isDirectory($path)) {
+            $path = str_replace(basename($path), '', $path);
         }
 
-        // Split each directory into an array and create it if it doesn't exist.
-        $parts = array_filter(explode('/', $path));
         $current = $this->dir;
+
+        // Recursive path creation by default.
+        $parts = array_filter(explode('/', $path));
+        if (!$recursive) {
+            $parts = [rtrim($path, '/')];
+        }
 
         foreach ($parts as $directory) {
             $current .= $directory . '/';
-            if (!Storage::exists($current)) {
+            if (!Storage::directoryExists($current)) {
                 Storage::makeDirectory($current);
             }
         }
@@ -101,31 +105,33 @@ class UserStorage implements UserStorageInterface
     }
 
     /**
-     * Detect whether the file or folder exists.
+     * Detect whether the file or directory exists.
+     * Assumes a path without a trailing slash or file extension is a directory.
+     *
+     * @param string $path File path within a user's directory.
+     *
+     * @return bool
      */
     public function exists(string $path): bool
     {
-        $isDirectory = \strpos($path, '/', -1) !== false
-            || \strpos(basename($path), '.') === false;
-
-        return $isDirectory
+        return $this->isDirectory($path)
             ? Storage::directoryExists($this->dir . $path)
             : Storage::exists($this->dir . $path);
     }
 
     /**
-     * Delete the destination file.
+     * Delete the file or directory within the user's directory.
      * Assumes a path without a trailing slash or file extension is a directory.
+     *
+     * @param string $path  File or directory within a user's directory.
+     * @param bool   $quiet Whether to check if the path exists.
      *
      * @return bool
      */
     public function delete(string $path, bool $quiet = false): bool
     {
-        $isDirectory = \strpos($path, '/', -1) !== false
-            || \strpos(basename($path), '.') === false;
-
         if (!$quiet) {
-            return $isDirectory
+            return $this->isDirectory($path)
                 ? Storage::deleteDirectory($this->dir . $path)
                 : Storage::delete($this->dir . $path);
         }
@@ -134,8 +140,101 @@ class UserStorage implements UserStorageInterface
             return false;
         }
 
-        return $isDirectory
+        return $this->isDirectory($path)
             ? Storage::deleteDirectory($this->dir . $path)
             : Storage::delete($this->dir . $path);
+    }
+
+    /**
+     * Detect whether a file exists which was modified before a given timestamp.
+     *
+     * @param int|string|object $date Date to search before.
+     *
+     * @return UserStorage The current instance.
+     */
+    public function hasFileBefore(int|string|object $date): bool
+    {
+        $date = $this->getDateSeconds($date);
+
+        foreach ($this->allFiles() as $file) {
+            if (Storage::lastModified($file) < $date) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Delete all files in the user's storage directory last modified before the given date.
+     *
+     * @param int|string|\DateTime $date Expiration date.
+     *
+     * @return UserStorage The current instance.
+     */
+    public function deleteFilesBefore(int|string|object $date): UserStorage
+    {
+        $date = $this->getDateSeconds($date);
+
+        foreach ($this->allFiles() as $file) {
+            if (Storage::lastModified($file) < $date) {
+                Storage::delete($file);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Handle each of a user's files, being mindful of memory consumption for large directories.
+     *
+     * @return \Generator
+     */
+    public function files(string $path = ''): \Generator
+    {
+        foreach (Storage::files($this->dir . $path) as $file) {
+            yield $file;
+        }
+    }
+
+    /**
+     * Handle each of a user's files, being mindful of memory consumption for large directories.
+     *
+     * @return \Generator
+     */
+    public function allFiles(string $path = ''): \Generator
+    {
+        foreach (Storage::allFiles($this->dir . $path) as $file) {
+            yield $file;
+        }
+    }
+
+    /**
+     * Detect whether the path is a directory.
+     * Assumes a path without a trailing slash or file extension is a directory.
+     *
+     * @param string $path File path.
+     *
+     * @return bool
+     */
+    private function isDirectory(string $path): bool
+    {
+        return strpos($path, '/', -1) !== false
+            || strpos(basename($path), '.') === false;
+    }
+
+    /**
+     * Get the number of seconds from a date.
+     *
+     * @param int|string|object $date Date to get seconds from.
+     *
+     * @return int Number of seconds.
+    */
+    private function getDateSeconds(int|string|object $date): int
+    {
+        if (is_int($date)) {
+            return $date;
+        }
+        return is_string($date) ? strtotime($date) : $date->getTimestamp();
     }
 }
