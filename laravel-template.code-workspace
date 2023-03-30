@@ -10,16 +10,22 @@
     "extensions": {
         "recommendations": [
             "amiralizadeh9480.laravel-extra-intellisense",
-            "onecentlin.laravel5-snippets",
             "ms-azuretools.vscode-docker",
             "bradlc.vscode-tailwindcss",
             "redhat.vscode-yaml",
-            "ms-vscode-remote.remote-wsl"
         ]
     },
     "tasks": {
         "version": "2.0.0",
         "tasks": [
+            {
+                "label": "Launch",
+                "dependsOrder": "sequence",
+                "dependsOn": [
+                    "Start Docker Desktop",
+                    "Sail Up"
+                ],
+            },
             {
                 "label": "Start Docker Desktop",
                 "type": "shell",
