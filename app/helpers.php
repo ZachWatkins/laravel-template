@@ -164,3 +164,75 @@ class Retryable_Query
         return false;
     }
 }
+
+if (!function_exists('user_storage')) {
+    /**
+     * Build a user storage disk on-demand.
+     *
+     * @param int $user_id The user ID to build the disk for.
+     *
+     * @return \Illuminate\Contracts\Filesystem\Filesystem
+     */
+    function user_storage(int $user_id): \Illuminate\Contracts\Filesystem\Filesystem
+    {
+        if (!$user_id) {
+            $user = \Illuminate\Support\Facades\Auth::user();
+            $user_id = $user ? $user->id : '';
+        }
+
+        $disk = config('filesystems.disks.user', [
+            'driver' => 'local',
+            'root' => storage_path('app/user/{user_id}'),
+            'throw' => false,
+        ]);
+
+        if ($user_id) {
+            $disk['root'] = false !== strpos('{user_id}', $disk['root'])
+                ? str_replace('{user_id}', $user_id, $disk['root'])
+                : rtrim($disk['root'], '/') . '/' . $user_id;
+        } else {
+            $disk['root'] = str_replace('/\/?{user_id}\/?/', '/', $disk['root']);
+        }
+
+        return \Illuminate\Support\Facades\Storage::build($disk);
+    }
+}
+
+if (!function_exists('public_user_storage')) {
+    /**
+     * Build a public user storage disk on-demand.
+     *
+     * @param int $user_id The user ID to build the disk for.
+     *
+     * @return \Illuminate\Contracts\Filesystem\Filesystem
+     */
+    function public_user_storage(int $user_id): \Illuminate\Contracts\Filesystem\Filesystem
+    {
+        if (!$user_id) {
+            $user = \Illuminate\Support\Facades\Auth::user();
+            $user_id = $user ? $user->id : '';
+        }
+
+        $disk = config('filesystems.disks.user-public', [
+            'driver' => 'local',
+            'root' => storage_path('app/public/user/{user_id}'),
+            'url' => env('APP_URL').'/storage/user/{user_id}',
+            'visibility' => 'public',
+            'throw' => false,
+        ]);
+
+        if ($user_id) {
+            $disk['root'] = false !== strpos('{user_id}', $disk['root'])
+                ? str_replace('{user_id}', $user_id, $disk['root'])
+                : rtrim($disk['root'], '/') . '/' . $user_id;
+            $disk['url'] = false !== strpos('{user_id}', $disk['url'])
+                ? str_replace('{user_id}', $user_id, $disk['url'])
+                : rtrim($disk['url'], '/') . '/' . $user_id;
+        } else {
+            $disk['root'] = str_replace('/\/?{user_id}\/?/', '/', $disk['root']);
+            $disk['url'] = str_replace('/\/?{user_id}\/?/', '/', $disk['url']);
+        }
+
+        return \Illuminate\Support\Facades\Storage::build($disk);
+    }
+}
