@@ -47,8 +47,6 @@
                     "$msCompile"
                 ],
                 "windows": {
-                    "command": "pwd",
-                    "args": [],
                     "options": {
                         "shell": {
                             "executable": "C:\\Windows\\system32\\wsl.exe",
