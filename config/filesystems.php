@@ -46,14 +46,14 @@ return [
 
         'user' => [
             'driver' => 'local',
-            'root' => storage_path('app/user'),
+            'root' => storage_path('app/user/{user_id}'),
             'throw' => false,
         ],
 
         'user-public' => [
             'driver' => 'local',
-            'root' => storage_path('app/public/user'),
-            'url' => env('APP_URL').'/storage/user',
+            'root' => storage_path('app/public/user/{user_id}'),
+            'url' => env('APP_URL').'/storage/user/{user_id}',
             'visibility' => 'public',
             'throw' => false,
         ],
