@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Location>
  */
-class LocationFactory extends Factory
+class ModelFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -19,6 +19,7 @@ class LocationFactory extends Factory
         return [
             'name' => fake()->city(),
             'date' => fake()->date(),
+            'location' => fake()->address(),
             'lat' => fake()->latitude(),
             'long' => fake()->longitude(),
         ];

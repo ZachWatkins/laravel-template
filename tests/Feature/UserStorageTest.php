@@ -13,26 +13,22 @@ class UserStorageTest extends TestCase
 {
     use RefreshDatabase;
 
+    const FILENAME = 'test.txt';
+
     /**
      * A basic authenticated user file storage feature test.
      */
     public function test_can_store_a_file_in_the_users_disk(): void
     {
-        $user = User::factory()->create([
-            'email' => 'user@example.com',
-            'password' => bcrypt('password'),
-        ]);
-
-        // Arrange
-        $filename = 'test.txt';
-        $file = UploadedFile::fake()->create($filename);
-
         Storage::fake('users');
+        $user = User::factory()->create();
 
-        // Act
-        Storage::disk('users')->putFileAs($user->id, $file, $filename);
+        /** @var Illuminate\Filesystem\FilesystemAdapter */
+        $disk = Storage::disk('users');
+        $file = UploadedFile::fake()->create(self::FILENAME);
 
-        // Assert
-        Storage::disk('users')->assertExists("$user->id/$filename");
+        $disk->putFileAs($user->id, $file, self::FILENAME);
+
+        $disk->assertExists("$user->id/" . self::FILENAME);
     }
 }
