@@ -23,39 +23,38 @@ class UserStorageTest extends TestCase
      */
     public function test_can_store_a_file_in_the_user_disk(): void
     {
-        try {
-            // Create a user.
-            $user = User::factory()->create([
-                'email' => 'user@example.com',
-                'password' => bcrypt('password'),
-            ]);
+        // Create a user.
+        $user = User::factory()->create([
+            'email' => 'user@example.com',
+            'password' => bcrypt('password'),
+        ]);
 
-            // Make a POST request to the login endpoint.
-            $response = $this->post('/login', [
-                'email' => 'user@example.com',
-                'password' => 'password',
-            ]);
+        // Make a POST request to the login endpoint.
+        $response = $this->post('/login', [
+            'email' => 'user@example.com',
+            'password' => 'password',
+        ]);
 
-            // Check that the user is authenticated.
-            $this->assertAuthenticatedAs($user);
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
+        // Check that the user is authenticated.
+        $this->assertAuthenticatedAs($user);
+
+        // store the file in the "user" disk
+        $path = Storage::disk('user')->put('/test.txt', 'test');
+
+        fwrite(STDERR, $path . PHP_EOL);
+
+        $this->assertTrue(
+            Storage::disk('user')->exists('test.txt'),
+            'File was not stored on the user disk.'
+        );
+
+        fwrite(STDERR, count(Storage::disk('user')->allFiles()) . PHP_EOL);
+        foreach (Storage::disk('user')->allFiles() as $file) {
+            fwrite(STDERR, $file . PHP_EOL);
         }
-
-        // // Create a fake file to upload.
-        // $file = UploadedFile::fake()->create('test.txt', 100);
-
-        // // Store the file on the user's disk.
-        // Storage::disk('user')->put('/', $file, 'test.txt');
-
-        // $this->assertTrue(
-        //     Storage::disk('user')->exists('test.txt'),
-        //     'File was not stored on the user disk.'
-        // );
-
-        // $this->assertTrue(
-        //     Storage::disk('user')->exists($user->id . '/test.txt'),
-        //     'File was not stored on a user ID path.'
-        // );
+        $this->assertTrue(
+            Storage::disk('user')->exists($user->id . '/test.txt'),
+            'File was not stored on a user ID path.'
+        );
     }
 }
