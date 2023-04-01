@@ -9,6 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Builder;
 
 class ModelsToCSV implements ShouldQueue
 {
@@ -44,23 +45,8 @@ class ModelsToCSV implements ShouldQueue
     public function handle(): void
     {
         $disk_root = config("filesystems.disks.{$this->disk}.root");
-        $model = new $this->model();
-        $csv_headers = $this->query['select'] ?? Schema::getColumnListing($model->getTable());
-
-        // Define the database query.
-        $eloquent = $model::select($this->query['select'] ?? '*');
-        if (isset($this->query['where'])) {
-            $eloquent->where($this->query['where']);
-        }
-        if (isset($this->query['orderBy'])) {
-            if (is_string($this->query['orderBy'])) {
-                $eloquent->orderBy($this->query['orderBy']);
-            } else {
-                foreach ($this->query['orderBy'] as $order) {
-                    $eloquent->orderBy($order[0], $order[1]);
-                }
-            }
-        }
+        $csv_headers = $this->query['select']
+            ?? Schema::getColumnListing((new $this->model())->getTable());
 
         $disk = Storage::disk($this->disk);
         $disk->makeDirectory(dirname($this->destination));
@@ -69,10 +55,50 @@ class ModelsToCSV implements ShouldQueue
 
         fputcsv($stream, $csv_headers);
 
-        foreach ($eloquent->lazy(self::CHUNK_SIZE) as $model) {
-            fputcsv($stream, $model->toArray());
+        foreach ($this->query()->lazy(self::CHUNK_SIZE) as $model) {
+            // The model's attributes may have line breaks.
+            fputcsv($stream, array_map(
+                fn ($value) => str_replace("\n", ' ', $value),
+                $model->toArray()
+            ));
         }
 
         fclose($stream);
+    }
+
+    /**
+     * Define the database query using the job parameters.
+     */
+    protected function query(): Builder
+    {
+        $model = new $this->model();
+        $params = $this->query;
+
+        // Define the database query.
+        $query = $model::select($params['select'] ?? '*');
+
+        // Handle the where clause.
+        if (isset($params['where'])) {
+            // If the where clause is a single-dimensional array, wrap it in
+            // another array so that it can be passed to the where method.
+            $first_key = array_key_first($params['where']);
+            if (is_string($params['where'][$first_key])) {
+                $params['where'] = [$params['where']];
+            }
+            $query->where($params['where']);
+        }
+
+        // Handle the orderby clause.
+        if (isset($params['orderBy'])) {
+            if (is_string($params['orderBy'])) {
+                $query->orderBy($params['orderBy']);
+            } else {
+                foreach ($params['orderBy'] as $order) {
+                    $query->orderBy($order[0], $order[1]);
+                }
+            }
+        }
+
+        return $query;
     }
 }
