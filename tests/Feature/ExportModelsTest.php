@@ -23,19 +23,16 @@ class ExportModelsTest extends TestCase
 
     public function test_export_models(): void
     {
-        // Set up.
         // Define the disk type to avoid linting errors.
         /** @var \Illuminate\Filesystem\FilesystemAdapter */
         $disk = Storage::disk(self::DISK);
 
         $user = User::factory()->create();
-        $models = Model::factory()
+        Model::factory()
             ->count(self::MODEL_COUNT)
             ->create(['user_id' => $user->id]);
         $query = self::QUERY;
         $query['where'][2] = $user->id;
-
-        $this->assertEquals(self::MODEL_COUNT, Model::count());
 
         $this->assertTrue(
             $disk->directoryMissing($user->id),
@@ -55,28 +52,32 @@ class ExportModelsTest extends TestCase
         );
 
         $this->assertTrue(
-            $disk->directoryExists($user->id),
-            'The user directory should exist.'
-        );
-        $this->assertTrue(
             $disk->fileExists("{$user->id}/test-models.csv"),
-            'The CSV file should exist.'
+            'The CSV file was not created.'
         );
 
+        // Examine the file contents.
         $contents = $disk->get("{$user->id}/test-models.csv");
+        $records = array_filter(explode(PHP_EOL, $contents));
+        $header = array_shift($lines);
 
-        $lines = count(explode(PHP_EOL, $contents));
         $this->assertEquals(
-            self::MODEL_COUNT + 2,
-            $lines,
-            'The CSV file should have '
-            . self::MODEL_COUNT
-            . ' rows of data, one header row, and one blank line.'
+            self::QUERY['select'],
+            explode(',', $header),
+            'The header column names do not match the select clause.'
+        );
+
+        $this->assertEquals(
+            self::MODEL_COUNT,
+            count($records),
+            'Expected '
+                . self::MODEL_COUNT
+                . ' records, found ' . count($records)
         );
 
         $this->assertTrue(
             $disk->deleteDirectory("{$user->id}/"),
-            'The user directory should be deleted after the test.'
+            'The user directory could not be deleted at the end of the test.'
         );
     }
 }
