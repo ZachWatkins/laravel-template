@@ -1,31 +1,28 @@
 // https://aka.ms/devcontainer.json
 {
-	"name": "Existing Docker Compose (Extend)",
+	"name": "Laravel Sail",
 	"dockerComposeFile": [
-		"../docker-compose.yml"
+		"../docker-compose.yml",
+		"docker-compose.extend.yml"
 	],
 	"service": "laravel.test",
 	"workspaceFolder": "/var/www/html",
 	"customizations": {
 		"vscode": {
 			"extensions": [
-                "mutantdino.resourcemonitor",
-                "amiralizadeh9480.laravel-extra-intellisense",
-                "wesbos.theme-cobalt2"
-            ],
+				"mutantdino.resourcemonitor",
+				"amiralizadeh9480.laravel-extra-intellisense",
+				"wesbos.theme-cobalt2",
+				"GitHub.copilot-nightly"
+			],
 			"settings": {}
 		}
 	},
 	"remoteUser": "sail",
-	"postCreateCommand": "chown -R 1000:1000 /var/www/html",
 	"forwardPorts": [
-		5173
-	],
-	"features": {
-		"ghcr.io/devcontainers-contrib/features/act:1": {
-			"version": "latest"
-		}
-	}
+        5173
+	]
+    // "postCreateCommand": "chown -R 1000:1000 /var/www/html",
 	// "runServices": [],
 	// "shutdownAction": "none",
 }
