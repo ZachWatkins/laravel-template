@@ -9,15 +9,10 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"mikestead.dotenv",
-				"amiralizadeh9480.laravel-extra-intellisense",
-				"ryannaddy.laravel-artisan",
-				"onecentlin.laravel5-snippets",
-				"onecentlin.laravel-blade",
-                "ms-vscode-remote.remote-containers",
-                "redhat.vscode-yaml",
+                "mutantdino.resourcemonitor",
+                "amiralizadeh9480.laravel-extra-intellisense",
                 "wesbos.theme-cobalt2"
-			],
+            ],
 			"settings": {}
 		}
 	},
