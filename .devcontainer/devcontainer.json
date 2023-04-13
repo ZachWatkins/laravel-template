@@ -23,7 +23,14 @@
 	},
 	"remoteUser": "sail",
 	"postCreateCommand": "chown -R 1000:1000 /var/www/html",
-	"forwardPorts": [5173]
+	"forwardPorts": [
+		5173
+	],
+	"features": {
+		"ghcr.io/devcontainers-contrib/features/act:1": {
+			"version": "latest"
+		}
+	}
 	// "runServices": [],
 	// "shutdownAction": "none",
 }
