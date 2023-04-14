@@ -2,8 +2,8 @@
 {
 	"name": "Laravel Sail",
 	"dockerComposeFile": [
-		"../docker-compose.yml",
-		"docker-compose.extend.yml"
+		"../docker-compose.yml"
+		// "docker-compose.extend.yml"
 	],
 	"service": "laravel.test",
 	"workspaceFolder": "/var/www/html",
@@ -18,11 +18,8 @@
 			"settings": {}
 		}
 	},
-	"remoteUser": "sail",
-	"forwardPorts": [
-        5173
-	]
-    // "postCreateCommand": "chown -R 1000:1000 /var/www/html",
+	"remoteUser": "sail"
+	// "forwardPorts": []
 	// "runServices": [],
 	// "shutdownAction": "none",
 }
