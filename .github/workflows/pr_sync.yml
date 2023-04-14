@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [synchronize]
   pull_request_target:
-    branches: [master]
+    branches: [trunk]
 
 jobs:
   test:
