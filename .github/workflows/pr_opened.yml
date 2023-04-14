@@ -20,7 +20,8 @@ jobs:
         run: composer install --no-interaction --prefer-dist --no-suggest --optimize-autoloader
       - name: Run tests
         run: |
-          php artisan key:generate
+          cp .env.example .env
+          php artisan key:generate --ansi
           php artisan test
   comment-failed-test:
     needs: test
