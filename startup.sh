@@ -28,3 +28,9 @@ echo "$COMMAND" >> /tmp/crontab.tmp
 crontab /tmp/crontab.tmp
 rm /tmp/crontab.tmp
 service cron start
+
+# Optimize Laravel.
+php artisan optimize
+
+# Migrate database tables.
+php artisan migrate
