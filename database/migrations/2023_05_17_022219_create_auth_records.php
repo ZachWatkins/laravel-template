@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('auth_records', function (Blueprint $table) {
+        Schema::create('auth_events', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id');
-            $table->string('event');
-            $table->timestamps();
+            $table->string('action');
+            $table->timestamp('created_at');
         });
     }
 
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('auth_records');
+        Schema::dropIfExists('auth_events');
     }
 };
