@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('auth_events', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('user_id');
+            $table->bigInteger('user_id')->nullable();
             $table->string('action');
+            $table->string('payload')->nullable();
             $table->timestamp('created_at');
         });
     }

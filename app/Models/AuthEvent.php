@@ -12,5 +12,6 @@ class AuthEvent extends Model
     protected $fillable = [
         'user_id',
         'action',
+        'payload',
     ];
 }
