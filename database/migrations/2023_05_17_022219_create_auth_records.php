@@ -16,7 +16,7 @@ return new class extends Migration
             $table->bigInteger('user_id')->nullable();
             $table->string('action');
             $table->string('payload')->nullable();
-            $table->timestamp('created_at');
+            $table->timestamp('created_at')->useCurrent();
         });
     }
 
