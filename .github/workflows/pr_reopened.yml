@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [reopened]
   pull_request_target:
-    branches: [master]
+    branches: [trunk]
 
 jobs:
   test:
