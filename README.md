@@ -98,3 +98,25 @@ If you are using Windows and want to run the application locally, you will need 
 ## Documentation
 
 (Laravel Documentation)[./docs/laravel/]
+
+## Dev Containers
+
+### File Permissions Issues on Windows
+
+This project uses a Docker container to run the application. If you are using Windows, you may encounter file permission issues when running the application. This is because the container runs as a non-root user, but the files on your Windows machine are owned by the root user. If you rebuild the `laravel.test` container and run `ls -ll` from the project root you should see that most files are owned by the `sail` user. 
+
+### Sharing Git credentials between Windows and WSL
+
+Source: https://code.visualstudio.com/docs/remote/troubleshooting#_sharing-git-credentials-between-windows-and-wsl
+
+If you use HTTPS to clone your repositories and have a credential helper configured in Windows, you can share this with WSL so that passwords you enter are persisted on both sides. (Note that this does not apply to using SSH keys.)
+
+Just follow these steps:
+
+1. Configure the credential manager on Windows by running the following in a Windows command prompt or PowerShell:
+
+   `git config --global credential.helper wincred`  
+
+2. Configure WSL to use the same credential helper, but running the following in a WSL terminal:
+
+   `git config --global credential.helper "/mnt/c/Program\ Files/Git/mingw64/bin/git-credential-manager-core.exe"`

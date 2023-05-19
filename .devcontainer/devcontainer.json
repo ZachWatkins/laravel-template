@@ -1,0 +1,25 @@
+// https://aka.ms/devcontainer.json
+{
+	"name": "Laravel Sail",
+	"dockerComposeFile": [
+		"../docker-compose.yml"
+		// "docker-compose.extend.yml"
+	],
+	"service": "laravel.test",
+	"workspaceFolder": "/var/www/html",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"mutantdino.resourcemonitor",
+				"amiralizadeh9480.laravel-extra-intellisense",
+				"wesbos.theme-cobalt2",
+				"GitHub.copilot-nightly"
+			],
+			"settings": {}
+		}
+	},
+	"remoteUser": "sail"
+	// "forwardPorts": []
+	// "runServices": [],
+	// "shutdownAction": "none",
+}
