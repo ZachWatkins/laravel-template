@@ -13,8 +13,8 @@ class ImportModel implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    const DB_VALUE_LIMIT = 2000;
     const ROW_LIMIT = 1000;
-    const VALUE_LIMIT = 2000;
 
     /**
      * Create a new job instance.
@@ -48,7 +48,7 @@ class ImportModel implements ShouldQueue
         $abspath = storage_path('app/' . $this->source);
         $stream = fopen($abspath, 'r');
         $headers = fgetcsv($stream);
-        $batch_size = (int) floor(self::VALUE_LIMIT / count($headers));
+        $batch_size = (int) floor(self::DB_VALUE_LIMIT / count($headers));
         $batch = [];
         $line = 0;
 
