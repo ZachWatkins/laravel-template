@@ -1,5 +1,27 @@
 <?php
+
 use Illuminate\Support\Facades\DB;
+
+if (!function_exists('delete_files_before')) {
+    /**
+     * Delete files before a given date, optionally within a given path pattern.
+     * @param int|string $date     Date to search before.
+     * @param string     $pathLike Path pattern for files to search in.
+     * @return void
+     */
+    function delete_files_before(int|string $date, string $pathLike = ''): void
+    {
+        if (is_string($date)) {
+            $date = strtotime($date);
+        }
+        $disk = \Illuminate\Support\Facades\Storage::disk();
+        foreach ($disk->allFiles($pathLike) as $file) {
+            if ($disk->lastModified($file) < $date) {
+                $disk->delete($file);
+            }
+        }
+    }
+}
 
 trait SetsPdoTimeout
 {
