@@ -21,7 +21,7 @@ class ModelController extends Controller
             $user = User::where('name', $example->name)->first();
         }
 
-        return $user->Models;
+        return $user->models;
     }
 
     /**
