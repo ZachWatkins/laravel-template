@@ -32,15 +32,16 @@ class ZipFiles implements ShouldQueue
         if (Storage::directoryMissing($this->destination)) {
             Storage::createDirectory($this->destination);
         }
+
         $zip = new ZipArchive();
         $zip->open(
-            storage_path('app/' . $this->destination),
+            Storage::path($this->destination),
             ZipArchive::CREATE|ZipArchive::OVERWRITE
         );
 
         foreach ($this->files as $file) {
             $zip->addFile(
-                storage_path('app/' . $file),
+                Storage::path($file),
                 basename($file)
             );
         }
