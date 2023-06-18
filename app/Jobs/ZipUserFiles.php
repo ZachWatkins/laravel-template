@@ -8,66 +8,59 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
-use App\Services\UserStorage;
+use ZipArchive;
 
 class ZipUserFiles implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    const USER_STORAGE = 'user';
+
     /**
-     * Create a new job instance.
+     * Create a new instance.
      *
-     * @param int    $user_id          User ID.
-     * @param string $destination      Destination zip file path.
-     * @param string $source           File pattern matched within the user's storage directory.
-     * @param string $delete_originals Whether to delete the original files after zipping.
+     * @param int    $user_id     User ID to archive files for.
+     * @param array  $files       One or more file names or patterns to compress.
+     * @param string $destination Destination zip file path.
+     * @param bool   $delete      Whether to delete the uncompressed files. Default true.
      */
     public function __construct(
         private int $user_id,
+        private array $files,
         private string $destination,
-        private string $source,
-        private bool $delete_originals = true
+        private bool $delete = true
     ) {}
 
-    /**
-     * Execute the job.
-     */
-    public function handle(UserStorage $storage): void
+    public function handle(): void
     {
-        $storage->ensureDirectoryExists($this->destination);
+        $userDirectory = self::USER_STORAGE . '/' . $this->user_id . '/';
+        $userDestination = $userDirectory . $this->destination;
 
-        // Create the zip file.
-        $zip = new \ZipArchive();
+        if (Storage::directoryMissing($userDestination)) {
+            Storage::createDirectory($userDestination);
+        }
+
+        $zip = new ZipArchive();
         $zip->open(
-            $storage->fullDir . $this->destination,
-            \ZipArchive::CREATE|\ZipArchive::OVERWRITE
+            Storage::path($userDestination),
+            ZipArchive::CREATE|ZipArchive::OVERWRITE
         );
 
-        // Add each user file to the archive.
-        foreach ($this->getFiles($storage) as $file) {
+        foreach ($this->files as $file) {
             $zip->addFile(
-                storage_path('app/' . $file),
-                str_replace($storage->dir, '', $file)
+                Storage::path($userDirectory . $file),
+                basename($file)
             );
         }
 
         $zip->close();
 
-        // Delete original files.
-        if ($this->delete_originals) {
-            $storage->delete($this->source);
+        if (!$this->delete) {
+            return;
         }
-    }
 
-    /**
-     * Handle each of a user's files, being mindful of memory consumption for large directories.
-     *
-     * @return \Generator
-     */
-    private function getFiles(UserStorage $storage): \Generator
-    {
-        foreach (Storage::allFiles($storage->dir . $this->source) as $file) {
-            yield $file;
+        foreach ($this->files as $file) {
+            Storage::delete($userDirectory . $file);
         }
     }
 }
