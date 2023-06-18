@@ -10,9 +10,27 @@ $ sail artisan inspire
 
 This application is a starting point for building an authenticated API with the [Laravel](https://laravel.com/) PHP framework.
 
+- [Local System Requirements](#system-requirements)
+- [Installation](#installation)
 - [Features](#features)
 - [Routes](#routes)
 - [Development](#development)
+
+## Local System Requirements
+
+1. [Docker Desktop](https://www.docker.com/products/docker-desktop)
+2. PHP and Composer: `$ bin/install-php`
+   - [PHP](https://www.php.net/downloads.php)  
+   - [Composer](https://getcomposer.org/download/)  
+3. (Windows) Windows Subsystem for Linux and Ubuntu: `$ bin/install-wsl`
+   - [Windows Subsystem for Linux](https://learn.microsoft.com/en-us/windows/wsl/install)  
+   - [Ubuntu](https://www.microsoft.com/en-us/p/ubuntu/9nblggh4msv6?activetab=pivot:overviewtab)  
+
+## Installation
+
+1. Clone the repository: `$ git clone https://github.com/zachwatkins/laravel-template`
+2. Open the project directory: `$ cd laravel-template`
+3. Run the repository initialization script: `$ bin/once`
 
 ## Features
 
@@ -27,7 +45,7 @@ Laravel first-party packages and features:
 
 My own features:
 
-1. __User Storage Service Class__ simplifies storing each user's files in their own folder. This is useful for managing user uploads.
+1. __User Storage Scope__ shows how to store each user's files in their own folder.
 2. __Generic Model Class__ demonstrates how Laravel registers, creates, and retrieves database table records.
 
 ## Routes
