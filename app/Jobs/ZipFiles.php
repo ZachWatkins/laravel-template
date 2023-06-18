@@ -19,7 +19,7 @@ class ZipFiles implements ShouldQueue
      *
      * @param array  $files       One or more file names or patterns to compress.
      * @param string $destination Destination zip file path.
-     * @param bool   $delete      Optional. Whether to delete the uncompressed files. Default true.
+     * @param bool   $delete      Whether to delete the uncompressed files. Default true.
      */
     public function __construct(
         private array $files,
