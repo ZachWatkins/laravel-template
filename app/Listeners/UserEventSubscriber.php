@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Models\User;
 use App\Models\AuthEvent;
+use Illuminate\Events\Dispatcher;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Auth\Events\Registered;
@@ -17,15 +18,28 @@ use Illuminate\Auth\Events\Lockout;
 use Illuminate\Auth\Events\CurrentDeviceLogout;
 use Illuminate\Auth\Events\OtherDeviceLogout;
 
-use Illuminate\Events\Dispatcher;
-
 class UserEventSubscriber
 {
-    /**
-     * Handle user registered events.
-     */
-    public function handleUserRegistered(Registered $event): void {
+    public function subscribe(Dispatcher $events): array
+    {
+        return [
+            Registered::class => 'registered',
+            Attempting::class => 'attempting',
+            Authenticated::class => 'authenticated',
+            Login::class => 'login',
+            Failed::class => 'failed',
+            Validated::class => 'validated',
+            Verified::class => 'verified',
+            Logout::class => 'logout',
+            CurrentDeviceLogout::class => 'currentDeviceLogout',
+            OtherDeviceLogout::class => 'otherDeviceLogout',
+            Lockout::class => 'lockout',
+            PasswordReset::class => 'passwordReset',
+        ];
+    }
 
+    public function registered(Registered $event): void
+    {
         $user = User::find((int) $event->user->getAuthIdentifier());
 
         if (!$user) {
@@ -40,17 +54,13 @@ class UserEventSubscriber
         $user->save();
 
         AuthEvent::create([
-            'user_id' => (int) $event->user->getAuthIdentifier(),
             'action' => 'registered',
+            'user_id' => (int) $event->user->getAuthIdentifier(),
         ]);
-
     }
 
-    /**
-     * Handle user attempting events.
-     */
-    public function handleUserAttempting(Attempting $event): void {
-
+    public function attempting(Attempting $event): void
+    {
         if (!User::where('email', $event->credentials['email'])->exists()) {
             return;
         }
@@ -59,147 +69,85 @@ class UserEventSubscriber
             'action' => 'attempting',
             'payload' => $event->credentials['email'],
         ]);
-
     }
 
-    /**
-     * Handle user authenticated events.
-     */
-    public function handleUserAuthenticated(Authenticated $event): void {
-
+    public function authenticated(Authenticated $event): void
+    {
         AuthEvent::create([
-            'user_id' => $event->user->getAuthIdentifier(),
             'action' => 'authenticated',
-        ]);
-
-    }
-
-    /**
-     * Handle user login events.
-     */
-    public function handleUserLogin(Login $event): void {
-
-        AuthEvent::create([
             'user_id' => $event->user->getAuthIdentifier(),
-            'action' => 'login',
         ]);
-
     }
 
-    /**
-     * Handle user failed events.
-     */
-    public function handleUserFailed(Failed $event): void {
+    public function login(Login $event): void
+    {
+        AuthEvent::create([
+            'action' => 'login',
+            'user_id' => $event->user->getAuthIdentifier(),
+        ]);
+    }
 
+    public function failed(Failed $event): void
+    {
         AuthEvent::create([
             'action' => 'failed',
             'payload' => $event->credentials['email'],
         ]);
-
     }
 
-    /**
-     * Handle user validated events.
-     */
-    public function handleUserValidated(Validated $event): void {
-
+    public function validated(Validated $event): void
+    {
         AuthEvent::create([
-            'user_id' => $event->user->getAuthIdentifier(),
             'action' => 'validated',
+            'user_id' => $event->user->getAuthIdentifier(),
         ]);
-
     }
 
-    /**
-     * Handle user verified events.
-     */
-    public function handleUserVerified(Verified $event): void {
-
+    public function verified(Verified $event): void
+    {
         AuthEvent::create([
             'action' => 'verified',
             'payload' => $event->user->getEmailForVerification(),
         ]);
-
     }
 
-    /**
-     * Handle user logout events.
-     */
-    public function handleUserLogout(Logout $event): void {
-
+    public function logout(Logout $event): void
+    {
         AuthEvent::create([
-            'user_id' => $event->user->getAuthIdentifier(),
             'action' => 'logout',
+            'user_id' => $event->user->getAuthIdentifier(),
         ]);
-
     }
 
-    /**
-     * Handle user current device logout events.
-     */
-    public function handleUserCurrentDeviceLogout(CurrentDeviceLogout $event): void {
-
+    public function currentDeviceLogout(CurrentDeviceLogout $event): void
+    {
         AuthEvent::create([
-            'user_id' => $event->user->getAuthIdentifier(),
             'action' => 'current_device_logout',
-        ]);
-
-    }
-
-    /**
-     * Handle user other device logout events.
-     */
-    public function handleUserOtherDeviceLogout(OtherDeviceLogout $event): void {
-
-        AuthEvent::create([
             'user_id' => $event->user->getAuthIdentifier(),
-            'action' => 'other_device_logout',
         ]);
-
     }
 
-    /**
-     * Handle user lockout events.
-     */
-    public function handleUserLockout(Lockout $event): void {
+    public function otherDeviceLogout(OtherDeviceLogout $event): void
+    {
+        AuthEvent::create([
+            'action' => 'other_device_logout',
+            'user_id' => $event->user->getAuthIdentifier(),
+        ]);
+    }
 
+    public function lockout(Lockout $event): void
+    {
         AuthEvent::create([
             'action' => 'lockout',
             'payload' => $event->request->email,
         ]);
-
     }
 
-    /**
-     * Handle user password reset events.
-     */
-    public function handlePasswordReset(PasswordReset $event): void {
-
-        AuthEvent::create([
-            'user_id' => $event->user->getAuthIdentifier(),
-            'action' => 'password_reset',
-        ]);
-
-    }
-
-    /**
-     * Register the listeners for the subscriber.
-     */
-    public function subscribe(Dispatcher $events): array
+    public function passwordReset(PasswordReset $event): void
     {
-        return [
-            Registered::class => 'handleUserRegistered',
-            Attempting::class => 'handleUserAttempting',
-            Authenticated::class => 'handleUserAuthenticated',
-            Login::class => 'handleUserLogin',
-            Failed::class => 'handleUserFailed',
-            Validated::class => 'handleUserValidated',
-            Verified::class => 'handleUserVerified',
-            Logout::class => 'handleUserLogout',
-            CurrentDeviceLogout::class => 'handleUserCurrentDeviceLogout',
-            OtherDeviceLogout::class => 'handleUserOtherDeviceLogout',
-            Lockout::class => 'handleUserLockout',
-            PasswordReset::class => 'handlePasswordReset',
-        ];
+        AuthEvent::create([
+            'action' => 'password_reset',
+            'user_id' => $event->user->getAuthIdentifier(),
+        ]);
     }
 }
