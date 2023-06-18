@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Storage;
 
 class ImportModel implements ShouldQueue
 {
@@ -15,42 +16,41 @@ class ImportModel implements ShouldQueue
     const ROW_LIMIT = 1000;
     const VALUE_LIMIT = 2000;
 
-    private string $file_path;
-    private object $model;
-    private array $properties;
-
     /**
      * Create a new job instance.
      *
-     * @param string $file_path  CSV file path relative to the application base path.
-     * @param string $model      Model class string.
-     * @param array  $properties Optional. Key values added to new model records.
+     * @param string $model             Model class string.
+     * @param string $source            Path to CSV file to import.
+     * @param array  $defaultAttributes Optional. Key values added to new model records.
      */
-    public function __construct(string $file_path, string $model, array $properties = [])
-    {
-        $this->file_path = base_path($file_path);
-        $this->model = new $model();
-        $this->properties = $properties;
+    public function __construct(
+        protected string $model,
+        protected string $source,
+        protected array $defaultAttributes = []
+    ){
+        if (!Storage::exists($source)) {
+            throw new \InvalidArgumentException('File not found at ' . $source);
+        }
+        $stream = fopen(storage_path('app/' . $source), 'r');
+        $headers = fgetcsv($stream);
+        fclose($stream);
+        if (!$headers || 1 === count($headers)) {
+            throw new \InvalidArgumentException('The CSV file is missing a header on the first row');
+        }
+        if (!class_exists($model)) {
+            throw new \InvalidArgumentException('Model not found: ' . $model);
+        }
     }
 
-    /**
-     * Execute the job.
-     */
     public function handle(): void
     {
-        if (!file_exists($this->file_path)) {
-            throw new \RuntimeException('File not found.');
-        }
+        $model = new $this->model();
+        $abspath = storage_path('app/' . $this->filepath);
+        $stream = fopen($abspath, 'r');
+        $headers = fgetcsv($stream);
 
-        $stream = fopen($this->file_path, 'r');
-        $headers = [''];
-        while (1 >= count($headers)) {
-            $headers = fgetcsv($stream);
-        }
-
-        // Add extra headers.
-        if ($this->properties) {
-            array_push($headers, ...array_keys($this->properties));
+        if ($this->defaultAttributes) {
+            array_push($headers, ...array_keys($this->defaultAttributes));
         }
 
         // Determine the number of rows to insert with each database query.
@@ -58,25 +58,24 @@ class ImportModel implements ShouldQueue
         $batch = [];
         $line = 0;
 
-        if (!$this->properties) {
+        if (!$this->defaultAttributes) {
             while(($record = fgetcsv($stream))) {
                 $batch[] = array_combine($headers, $record);
                 $line++;
                 if ($batch_size === $line) {
-                    $this->model::insert($batch);
+                    $model::insert($batch);
                     $batch = [];
                     $line = 0;
                 }
             }
         } else {
-            // Add extra header values.
-            $properties_values = array_values($this->properties);
+            $attribute_values = array_values($this->defaultAttributes);
             while(($record = fgetcsv($stream))) {
-                array_push($record, ...$properties_values);
+                array_push($record, ...$attribute_values);
                 $batch[] = array_combine($headers, $record);
                 $line++;
                 if ($batch_size === $line) {
-                    $this->model::insert($batch);
+                    $model::insert($batch);
                     $batch = [];
                     $line = 0;
                 }
@@ -85,9 +84,9 @@ class ImportModel implements ShouldQueue
 
         fclose($stream);
         if ($batch) {
-            $this->model::insert($batch);
+            $model::insert($batch);
         }
 
-        unlink($this->file_path);
+        unlink($abspath);
     }
 }
