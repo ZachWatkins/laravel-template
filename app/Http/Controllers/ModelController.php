@@ -40,7 +40,8 @@ class ModelController extends Controller
      */
     public function show(string $id)
     {
-        return Model::find($id);
+        $user = auth()->user();
+        return Model::where('user_id', auth()->user()->id)->where('id', (int) $id)->first();
     }
 
     /**
