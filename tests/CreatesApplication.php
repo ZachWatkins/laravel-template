@@ -17,7 +17,7 @@ trait CreatesApplication
 
         $app->make(Kernel::class)->bootstrap();
 
-        Hash::setRounds(5); // Reduce the time taken to hash passwords.
+        Hash::setRounds(4); // Reduce the time taken to hash passwords.
 
         return $app;
     }
