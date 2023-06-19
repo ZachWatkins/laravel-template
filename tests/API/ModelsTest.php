@@ -27,5 +27,8 @@ class ModelsTest extends TestCase
         $response = $this->actingAs($user)->get('/api/models')->assertOk();
         $this->assertEquals(1, count($response['models']), 'Only one model was returned');
         $this->assertEquals($response['models'][0]['id'], $user->id, 'Only the user\'s model was returned');
+
+        $response = $this->actingAs($user)->get('/api/models/1')->assertOk();
+        $this->assertEquals($user->id, $response['user_id'], 'User model was returned');
     }
 }
