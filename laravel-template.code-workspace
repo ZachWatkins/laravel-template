@@ -98,5 +98,8 @@
                 },
             }
         ]
+    },
+    "settings": {
+        "workbench.colorTheme": "Default Dark Modern"
     }
 }
