@@ -13,15 +13,10 @@ class ModelController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = auth()->user();
-        if (!$user) {
-            $example = User::factory()->example()->make();
-            $user = User::where('name', $example->name)->first();
-        }
-
-        return $user->models;
+        return response()->json(['models' => $user->models]);
     }
 
     /**
