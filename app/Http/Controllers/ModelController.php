@@ -57,7 +57,19 @@ class ModelController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        Model::find(intval($id))->update($request->all());
+        $model = Model::where('user_id', auth()->user()->id)->where('id', (int) $id)->first();
+        if (!$model) {
+            return response()->json(['message' => 'Model not found'], 404);
+        }
+        // Sanitize.
+        $attributes = $request->all();
+        unset($attributes['user_id']);
+
+        $model->fill($attributes);
+        if (!$model->save()) {
+            return response()->json(['message' => 'Model not saved'], 500);
+        }
+        return response()->json(['success' => true]);
     }
 
     /**
