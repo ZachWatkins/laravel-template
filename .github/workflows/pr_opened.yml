@@ -20,7 +20,7 @@ jobs:
         run: composer install --no-interaction --prefer-dist --no-suggest --optimize-autoloader
       - name: Generate Laravel application key
         run: |
-          touch .env
+          echo "APP_KEY=" > .env
           php artisan key:generate
       - name: Run tests
         run: php artisan test
