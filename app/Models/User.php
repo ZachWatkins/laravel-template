@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use App\Models\Location;
+use App\Models\Model;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -45,10 +45,10 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
     /**
-     * Get the user that owns the phone.
+     * Get the user's Model records.
      */
-    public function locations(): HasMany
+    public function models(): HasMany
     {
-        return $this->hasMany(Location::class, 'user_id');
+        return $this->hasMany(Model::class, 'user_id');
     }
 }

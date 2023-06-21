@@ -41,9 +41,12 @@ class UserFactory extends Factory
      */
     public function example(): static
     {
+        static $password;
+
         return $this->state(fn (array $attributes) => [
             'name' => 'Example User',
             'email' => 'example@test.local',
+            'password' => $password ?: $password = bcrypt('secret'),
         ]);
     }
 }

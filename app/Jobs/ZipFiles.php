@@ -10,22 +10,18 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
 use ZipArchive;
 
-class ZipUserFiles implements ShouldQueue
+class ZipFiles implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-    const USER_STORAGE = 'user';
 
     /**
      * Create a new instance.
      *
-     * @param int    $user_id     User ID to archive files for.
      * @param array  $files       One or more file names or patterns to compress.
      * @param string $destination Destination zip file path.
      * @param bool   $delete      Whether to delete the uncompressed files. Default true.
      */
     public function __construct(
-        private int $user_id,
         private array $files,
         private string $destination,
         private bool $delete = true
@@ -33,22 +29,19 @@ class ZipUserFiles implements ShouldQueue
 
     public function handle(): void
     {
-        $userDirectory = self::USER_STORAGE . '/' . $this->user_id . '/';
-        $userDestination = $userDirectory . $this->destination;
-
-        if (Storage::directoryMissing($userDestination)) {
-            Storage::createDirectory($userDestination);
+        if (Storage::directoryMissing($this->destination)) {
+            Storage::createDirectory($this->destination);
         }
 
         $zip = new ZipArchive();
         $zip->open(
-            Storage::path($userDestination),
+            Storage::path($this->destination),
             ZipArchive::CREATE|ZipArchive::OVERWRITE
         );
 
         foreach ($this->files as $file) {
             $zip->addFile(
-                Storage::path($userDirectory . $file),
+                Storage::path($file),
                 basename($file)
             );
         }
@@ -60,7 +53,7 @@ class ZipUserFiles implements ShouldQueue
         }
 
         foreach ($this->files as $file) {
-            Storage::delete($userDirectory . $file);
+            Storage::delete($file);
         }
     }
 }

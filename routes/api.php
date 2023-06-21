@@ -19,13 +19,15 @@ use Illuminate\Routing\Middleware\ValidateSignature;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/api/user', function (Request $request) {
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 })->name('api.user');
 
-Route::resource('/api/models', ModelController::class);
-Route::post('/api/import', ImportController::class);
-Route::get('/api/export', [ExportController::class, 'index'])->name('api.index-export');
-Route::get('/api/export/create', [ExportController::class, 'create'])->name('api.create-export');
-Route::get('/api/download', DownloadController::class)
+Route::middleware('auth:sanctum')->group(function () {
+    Route::resource('/models', ModelController::class);
+    Route::post('/import', ImportController::class);
+    Route::get('/export', [ExportController::class, 'index'])->name('api.index-export');
+    Route::get('/export/create', [ExportController::class, 'create'])->name('api.create-export');
+});
+Route::get('/download', DownloadController::class)
     ->name('api.download')->middleware('signed');

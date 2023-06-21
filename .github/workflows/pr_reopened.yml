@@ -19,7 +19,9 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist --no-suggest --optimize-autoloader
       - name: Generate Laravel application key
-        run: php artisan key:generate
+        run: |
+          php -r "file_exists('.env') || copy('.env.example', '.env');"
+          php artisan key:generate
       - name: Run tests
         run: php artisan test
   comment-failed-test:

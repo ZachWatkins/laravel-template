@@ -7,63 +7,85 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\DB;
 
 class ModelsFromCSV implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    const VALUE_LIMIT = 2000;
+    const DB_VALUE_LIMIT = 2000;
     const ROW_LIMIT = 1000;
 
     /**
-     * Import models from a database to a CSV file on a disk.
+     * Create a new job instance.
      *
-     * @param string $model The model to import.
-     * @param string $disk The disk to import from.
-     * @param string $source The source path to import from.
-     * @param array  $query {
-     *     The query to apply to the model (optional).
-     *     @type array        $select  The Select clause.
-     *     @type array        $where   The where clause.
-     *     @type string|array $orderBy The orderBy clause. Accepts a column
-     *                                 name or an array of arrays of column
-     *                                 names and directions ('asc', 'desc').
-     * }
+     * @param string $model             Model class string.
+     * @param string $source            Path to CSV file to import.
+     * @param array  $defaultAttributes Optional. Key values added to new model records.
      */
     public function __construct(
         protected string $model,
-        protected string $disk,
-        protected string $source = 'models.csv',
-        protected array $query = []
-    ) {}
+        protected string $source,
+        protected array $defaultAttributes = []
+    ){
+        if (!Storage::exists($source)) {
+            throw new \InvalidArgumentException('File not found at ' . $source);
+        }
+        $stream = fopen(storage_path('app/' . $source), 'r');
+        $headers = fgetcsv($stream);
+        fclose($stream);
+        if (!$headers || 1 === count($headers)) {
+            throw new \InvalidArgumentException('The CSV file is missing a header on the first row');
+        }
+        if (!class_exists($model)) {
+            throw new \InvalidArgumentException('Model not found: ' . $model);
+        }
+    }
 
-    /**
-     * Execute the job.
-     */
     public function handle(): void
     {
-        $disk_root = config("filesystems.disks.{$this->disk}.root");
-
-        $stream = fopen("$disk_root/$this->source", 'r');
+        $model = new $this->model();
+        $abspath = storage_path('app/' . $this->source);
+        $stream = fopen($abspath, 'r');
         $headers = fgetcsv($stream);
-        $limit = min((int) ceil(self::VALUE_LIMIT / count($headers)), self::ROW_LIMIT);
-        $i = 0;
-        $rows = [];
+        $batch_size = (int) floor(self::DB_VALUE_LIMIT / count($headers));
+        $batch = [];
+        $line = 0;
 
-        while ($record = fgetcsv($stream)) {
-            $rows[] = array_combine($headers, $record);
-            $i++;
-            if ($i >= $limit) {
-                DB::table($this->model::TABLE)->insert($rows);
-                $rows = [];
-                $i = 0;
+        if (!$this->defaultAttributes) {
+
+            while(($record = fgetcsv($stream))) {
+                $batch[] = array_combine($headers, $record);
+                $line++;
+                if ($batch_size === $line) {
+                    $model::insert($batch);
+                    $batch = [];
+                    $line = 0;
+                }
+            }
+
+        } else {
+
+            array_push($headers, ...array_keys($this->defaultAttributes));
+            $attribute_values = array_values($this->defaultAttributes);
+
+            while(($record = fgetcsv($stream))) {
+                array_push($record, ...$attribute_values);
+                $batch[] = array_combine($headers, $record);
+                $line++;
+                if ($batch_size === $line) {
+                    $model::insert($batch);
+                    $batch = [];
+                    $line = 0;
+                }
             }
         }
 
         fclose($stream);
+        if ($batch) {
+            $model::insert($batch);
+        }
+
+        unlink($abspath);
     }
 }

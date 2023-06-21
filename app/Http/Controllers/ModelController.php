@@ -13,15 +13,10 @@ class ModelController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = auth()->user();
-        if (!$user) {
-            $example = User::factory()->example()->make();
-            $user = User::where('name', $example->name)->first();
-        }
-
-        return $user->Models;
+        return response()->json(['models' => $user->models]);
     }
 
     /**
@@ -45,7 +40,8 @@ class ModelController extends Controller
      */
     public function show(string $id)
     {
-        return Model::find($id);
+        $user = auth()->user();
+        return Model::where('user_id', auth()->user()->id)->where('id', (int) $id)->first();
     }
 
     /**
@@ -61,7 +57,19 @@ class ModelController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        Model::find(intval($id))->update($request->all());
+        $model = Model::where('user_id', auth()->user()->id)->where('id', (int) $id)->first();
+        if (!$model) {
+            return response()->json(['message' => 'Model not found'], 404);
+        }
+        // Sanitize.
+        $attributes = $request->all();
+        unset($attributes['user_id']);
+
+        $model->fill($attributes);
+        if (!$model->save()) {
+            return response()->json(['message' => 'Model not saved'], 500);
+        }
+        return response()->json(['success' => true]);
     }
 
     /**
