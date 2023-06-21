@@ -18,10 +18,11 @@ jobs:
           php-version: "8.2"
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist --no-suggest --optimize-autoloader
-      - name: Generate Laravel application key
+      - name: Prepare test environment
         run: |
           echo "APP_KEY=" > .env
           php artisan key:generate
+          npm run build
       - name: Run tests
         run: php artisan test
   comment-failed-test:
