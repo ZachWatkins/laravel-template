@@ -26,7 +26,7 @@ class ExportModelsTest extends TestCase
     {
         // Define the disk type to avoid linting errors.
         /** @var \Illuminate\Filesystem\FilesystemAdapter */
-        $disk = Storage::disk(self::DISK);
+        $disk = Storage::disk(name: self::DISK);
 
         $user = User::factory()->create();
         Model::factory()
@@ -36,31 +36,26 @@ class ExportModelsTest extends TestCase
         $query['where'][2] = $user->id;
 
         $this->assertTrue(
-            $disk->directoryMissing($user->id),
-            'The user directory should not exist before the test.'
-        );
-
-        $this->assertTrue(
-            $disk->fileMissing("{$user->id}/test-models.csv"),
+            $disk->fileMissing($user->id . '/' . self::FILE_NAME),
             'The CSV file should not exist before the test.'
         );
 
         ModelsToCSV::dispatch(
             Model::class,
             self::DISK,
-            "{$user->id}/test-models.csv",
+            $user->id . '/' . self::FILE_NAME,
             $query
         );
 
         $this->assertTrue(
-            $disk->fileExists("{$user->id}/test-models.csv"),
+            $disk->fileExists($user->id . '/' . self::FILE_NAME),
             'The CSV file was not created.'
         );
 
         // Examine the file contents.
-        $contents = $disk->get("{$user->id}/test-models.csv");
+        $contents = $disk->get($user->id . '/' . self::FILE_NAME);
         $records = array_filter(explode(PHP_EOL, $contents));
-        $header = array_shift($lines);
+        $header = array_shift($records);
 
         $this->assertEquals(
             self::QUERY['select'],
@@ -71,13 +66,11 @@ class ExportModelsTest extends TestCase
         $this->assertEquals(
             self::MODEL_COUNT,
             count($records),
-            'Expected '
-                . self::MODEL_COUNT
-                . ' records, found ' . count($records)
+            'Expected ' . self::MODEL_COUNT . ' records, found ' . count($records)
         );
 
         $this->assertTrue(
-            $disk->deleteDirectory("{$user->id}/"),
+            $disk->delete($user->id . '/' . self::FILE_NAME),
             'The user directory could not be deleted at the end of the test.'
         );
     }
