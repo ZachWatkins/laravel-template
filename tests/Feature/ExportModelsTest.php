@@ -80,4 +80,13 @@ class ExportModelsTest extends TestCase
             'The user directory could not be deleted at the end of the test.'
         );
     }
+
+    public function tearDown(): void
+    {
+        // Define the disk type to avoid linting errors.
+        /** @var \Illuminate\Filesystem\FilesystemAdapter */
+        $disk = Storage::disk(name: self::DISK);
+        $user = User::firstOr(fn () => User::factory()->create());
+        $disk->deleteDirectory("{$user->id}/");
+    }
 }
