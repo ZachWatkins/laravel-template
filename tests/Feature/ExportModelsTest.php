@@ -20,6 +20,7 @@ class ExportModelsTest extends TestCase
     ];
     protected const MODEL_COUNT = 10;
     protected const DISK = 'users';
+    protected const FILE_NAME = 'test-models.csv';
 
     public function test_export_models(): void
     {
@@ -85,8 +86,10 @@ class ExportModelsTest extends TestCase
     {
         // Define the disk type to avoid linting errors.
         /** @var \Illuminate\Filesystem\FilesystemAdapter */
-        $disk = Storage::disk(name: self::DISK);
+        $disk = Storage::disk(self::DISK);
         $user = User::firstOr(fn () => User::factory()->create());
-        $disk->deleteDirectory("{$user->id}/");
+        if ($disk->exists($user->id . '/' . self::FILE_NAME)) {
+            $disk->delete($user->id . '/' . self::FILE_NAME);
+        }
     }
 }
