@@ -20,7 +20,7 @@ class ExportModelsTest extends TestCase
     ];
     protected const MODEL_COUNT = 10;
     protected const DISK = 'users';
-    protected const FILE_NAME = 'test-models.csv';
+    protected const FILE_NAME = 'export-models-test.csv';
 
     public function test_export_models(): void
     {
