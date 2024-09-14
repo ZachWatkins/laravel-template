@@ -54,7 +54,7 @@ class ExportModelsTest extends TestCase
 
         // Examine the file contents.
         $contents = $disk->get($user->id . '/' . self::FILE_NAME);
-        $records = array_filter(explode(PHP_EOL, $contents));
+        $records = array_filter(preg_split('/\r\n|\n/', $contents));
         $header = array_shift($records);
 
         $this->assertEquals(
