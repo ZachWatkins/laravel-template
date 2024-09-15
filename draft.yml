@@ -6,13 +6,13 @@ models:
 
 controllers:
   Post:
-    resource: all
+    resource
 
-    store:
-      validate: title, content
-      save: post
-      send: ReviewNotification to:post.author with:post
-      dispatch: SyncMedia with:post
-      fire: NewPost with:post
-      flash: post.title
-      redirect: post.index
+    # store:
+    #   validate: title, content
+    #   save: post
+    #   send: ReviewNotification to:post.author with:post
+    #   dispatch: SyncMedia with:post
+    #   fire: NewPost with:post
+    #   flash: post.title
+    #   redirect: post.index
