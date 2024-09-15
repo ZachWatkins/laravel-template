@@ -6,7 +6,7 @@ models:
 
 controllers:
   Post:
-    resource
+    resource: paginate:posts
 
     # store:
     #   validate: title, content
