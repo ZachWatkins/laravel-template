@@ -6,9 +6,7 @@ models:
 
 controllers:
   Post:
-    index:
-      query: all
-      render: post.index with:posts
+    resource: all
 
     store:
       validate: title, content
