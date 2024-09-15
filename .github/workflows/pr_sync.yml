@@ -3,7 +3,6 @@ name: Pull Request Synchronized
 on:
   pull_request:
     types: [synchronize]
-  pull_request_target:
     branches: [trunk]
 
 jobs:
