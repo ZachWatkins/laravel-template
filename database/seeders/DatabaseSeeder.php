@@ -11,5 +11,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        if (app()->isLocal()) {
+            $user = new \App\Models\User();
+            $user->name = 'Local User';
+            $user->email = 'user@local.dev';
+            $user->password = bcrypt('password');
+            $user->save();
+        }
     }
 }
