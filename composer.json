@@ -9,22 +9,23 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "ext-curl": "^8.0",
-        "guzzlehttp/guzzle": "^7.2",
-        "laravel/framework": "^11.0"
+        "inertiajs/inertia-laravel": "^1.0",
+        "laravel/framework": "^11.9",
+        "laravel/sanctum": "^4.0",
+        "tightenco/ziggy": "^2.0"
     },
     "require-dev": {
-        "fakerphp/faker": "^1.9.1",
+        "fakerphp/faker": "^1.23",
         "jasonmccreary/laravel-test-assertions": "^2.4",
         "laravel-shift/blueprint": "^2.10",
-        "laravel/breeze": "^2.0",
-        "laravel/pint": "^1.0",
-        "laravel/tinker": "^2.8",
-        "mockery/mockery": "^1.4.4",
+        "laravel/breeze": "^2.2",
+        "laravel/pail": "^1.1",
+        "laravel/pint": "^1.13",
+        "laravel/tinker": "^2.10",
+        "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.1",
-        "pestphp/pest": "^2.35",
-        "phpunit/phpunit": "^10.0",
-        "spatie/laravel-ignition": "^2.0"
+        "pestphp/pest": "^3.5",
+        "pestphp/pest-plugin-laravel": "^3.0"
     },
     "autoload": {
         "psr-4": {
@@ -51,7 +52,12 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi",
-            "@php artisan migrate:fresh --seed"
+            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
+            "@php artisan migrate --graceful --ansi"
+        ],
+        "dev": [
+            "Composer\\Config::disableProcessTimeout",
+            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite"
         ]
     },
     "extra": {
@@ -60,6 +66,7 @@
         }
     },
     "config": {
+        "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true,
         "allow-plugins": {
