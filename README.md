@@ -1,14 +1,10 @@
-# Laravel Template
+# Transport Interstellar Mechatronics (a Laravel template repository)
 
-```bash
-$ sail artisan inspire
+This application is a starting point for building an inventory management system with the [Laravel](https://laravel.com/) PHP framework.
 
-“ It is not the man who has too little, but the man who craves more, that is poor. ”
-— Seneca
+It's dedicated to my father, who passed away in 2014. He once asked me if I could make an app that tracked inventory for the truck parts and repair company he was a manager for. He said he wanted to know when to order more parts so they wouldn't run out. I wasn't good enough back then, but I am now. This is for you Dad.
 
-```
-
-This application is a starting point for building an authenticated API with the [Laravel](https://laravel.com/) PHP framework.
+It's built with Laravel and React.
 
 - [Local System Requirements](#system-requirements)
 - [Installation](#installation)
