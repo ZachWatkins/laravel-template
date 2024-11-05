@@ -6,109 +6,92 @@ It's dedicated to my father, who passed away in 2014. He once asked me if I coul
 
 It's built with Laravel and React.
 
-- [Local System Requirements](#system-requirements)
-- [Installation](#installation)
-- [Features](#features)
-- [Routes](#routes)
-- [Development](#development)
+-   [Local System Requirements](#system-requirements)
+-   [Installation](#installation)
+-   [Features](#features)
+-   [Routes](#routes)
+-   [Additional Documentation](#additional-documentation)
 
 ## Local System Requirements
 
-1. [Docker Desktop](https://www.docker.com/products/docker-desktop)
-2. PHP and Composer: `$ bin/install-php`
-   - [PHP](https://www.php.net/downloads.php)  
-   - [Composer](https://getcomposer.org/download/)  
-3. (Windows) Windows Subsystem for Linux and Ubuntu: `$ bin/install-wsl`
-   - [Windows Subsystem for Linux](https://learn.microsoft.com/en-us/windows/wsl/install)  
-   - [Ubuntu](https://www.microsoft.com/en-us/p/ubuntu/9nblggh4msv6?activetab=pivot:overviewtab)  
+PHP and Composer are required to install and run this project. You can use my installer scripts (Mac or Linux: [./bin/install-php](./bin/install-php)) (Windows: [./bin/install-php.bat](./bin/install-php.bat)) or see the links below for official instructions:
+
+-   [PHP](https://www.php.net/downloads.php)
+-   [Composer](https://getcomposer.org/download/)
 
 ## Installation
 
-1. Clone the repository: `$ git clone https://github.com/zachwatkins/laravel-template`
-2. Open the project directory: `$ cd laravel-template`
-3. Run the repository initialization script: `$ bin/once`
+```shell
+git clone https://github.com/zachwatkins/laravel-template laravel-app
+cd laravel-app
+npm install
+composer install
+composer create-project
+composer run dev
+```
 
 ## Features
 
 Laravel first-party packages and features:
 
-1. __Breeze (Laravel Package)__ for user registration, login, authentication, and profile management. Also includes PHPUnit tests for authentication features.
-2. __Sanctum (Laravel Package)__ for API authentication and token management.
-3. __Sail (Laravel Package)__ for local development.
-4. __Queues__ for performing tasks asynchronously.
-5. __Migrations__ for database schema management.
-6. __Tests__ for peace of mind.
-
-My own features:
-
-1. __User Storage Scope__ shows how to store each user's files in their own folder.
-2. __Generic Model Class__ demonstrates how Laravel registers, creates, and retrieves database table records.
+1. **Breeze (Laravel Package)** for user registration, login, authentication, and profile management. Also includes PHPUnit tests for authentication features.
+2. **React with Inertia.js** for building single-page applications.
+3. **Queues** for performing tasks asynchronously.
+4. **Migrations** for database schema management.
+5. **Tests** for peace of mind.
 
 ## Routes
 
-- [Public Web Routes](#public-web-routes)
-- [Guest Web Routes](#guest-web-routes)
-- [Authenticated Web Routes](#authenticated-web-routes)
+-   [Public Web Routes](#public-web-routes)
+-   [Guest Web Routes](#guest-web-routes)
+-   [Authenticated Web Routes](#authenticated-web-routes)
 
 ### Public Web Routes
 
 | Verb | URI | Action | Route Name
-| GET  | `/` | view   | welcome
+| GET | `/` | view | welcome
 
 ### Guest Web Routes
 
-| Verb      | URI                | Action  | Route Name
-| GET       | `/register`        | create  | register
-| POST      | `/register`        | store   | -
-| GET       | `/login`           | create  | login
-| POST      | `/login`           | store   | -
-| GET       | `/forgot-password` | create  | password.request
-| POST      | `/forgot-password` | store   | password.email
-| GET       | `/reset-password`  | create  | password.reset
-| POST      | `/reset-password`  | store   | password.update
+| Verb | URI | Action | Route Name
+| GET | `/register` | create | register
+| POST | `/register` | store | -
+| GET | `/login` | create | login
+| POST | `/login` | store | -
+| GET | `/forgot-password` | create | password.request
+| POST | `/forgot-password` | store | password.email
+| GET | `/reset-password` | create | password.reset
+| POST | `/reset-password` | store | password.update
 
 ### Authenticated Web Routes
 
-| Verb      | URI                          | Action  | Route Name
-| GET       | `/verify-email`              | create  | verification.notice
-| GET       | `/verify-email/{id}/{hash}`  | create  | verification.verify
-| POST      | `/verify-email/{id}/{hash}`  | store   | -
-| POST      | `/verify-email-notification` | store   | verification.send
-| GET       | `/confirm-password`          | create  | password.confirm
-| POST      | `/confirm-password`          | store   | -
-| PUT       | `/password`                  | update  | password.update
-| POST      | `/logout`                    | destroy | logout
-| GET       | `/dashboard/`                | view    | dashboard
-| GET       | `/profile`                   | view    | profile.edit
-| PATCH     | `/profile`                   | update  | profile.update
-| DELETE    | `/profile`                   | destroy | profile.destroy
+| Verb | URI | Action | Route Name
+| GET | `/verify-email` | create | verification.notice
+| GET | `/verify-email/{id}/{hash}` | create | verification.verify
+| POST | `/verify-email/{id}/{hash}` | store | -
+| POST | `/verify-email-notification` | store | verification.send
+| GET | `/confirm-password` | create | password.confirm
+| POST | `/confirm-password` | store | -
+| PUT | `/password` | update | password.update
+| POST | `/logout` | destroy | logout
+| GET | `/dashboard/` | view | dashboard
+| GET | `/profile` | view | profile.edit
+| PATCH | `/profile` | update | profile.update
+| DELETE | `/profile` | destroy | profile.destroy
 
 ### Authenticated API Routes
 
-| Verb      | URI                 | Action  | Route Name
-| GET       | `/api/user`         | closure | -
-| GET       | `/models`           | index   | photos.index
-| GET       | `/models/create`    | create  | photos.create
-| POST      | `/models`           | store   | photos.store
-| GET       | `/models/{id}`      | show    | photos.show
-| GET       | `/models/{id}/edit` | edit    | photos.edit
-| PUT/PATCH | `/models/{id}`      | update  | photos.update
-| DELETE    | `/models/{id}`      | destroy | photos.destroy
+| Verb | URI | Action | Route Name
+| GET | `/api/user` | closure | -
+| GET | `/parts` | index | parts.index
+| GET | `/parts/create` | create | parts.create
+| POST | `/parts` | store | parts.store
+| GET | `/parts/{id}` | show | parts.show
+| GET | `/parts/{id}/edit` | edit | parts.edit
+| PUT/PATCH | `/parts/{id}` | update | parts.update
+| DELETE | `/parts/{id}` | destroy | parts.destroy
 
-## Development
+## Additional Documentation
 
-
-### Laravel Sail
-
-This application uses [Laravel Sail](https://laravel.com/docs/8.x/sail) for local development. Laravel Sail is a Docker-based development environment for Laravel. It provides a minimal Linux environment with all of the services and features you need to develop a Laravel application.
-
-If you are using Windows and want to run the application locally, you will need to install [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
-
-### URLs
-
-`http://localhost:80` (Web)
-`http://localhost:8025` (Mailpit)
-
-## Documentation
-
-(Laravel Documentation)[./docs/laravel/]
+[Laravel Documentation](https://laravel.com/docs)
+[React Documentation](https://react.dev)
