@@ -1,7 +1,7 @@
 {
-    "name": "laravel/laravel",
+    "name": "zachwatkins/laravel-template",
     "type": "project",
-    "description": "The Laravel Framework.",
+    "description": "A Laravel template for starting new projects.",
     "keywords": [
         "framework",
         "laravel"
@@ -9,6 +9,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "ext-pcntl": "*",
         "inertiajs/inertia-laravel": "^1.0",
         "laravel/framework": "^11.9",
         "laravel/sanctum": "^4.0",
