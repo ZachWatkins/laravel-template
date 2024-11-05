@@ -34,55 +34,71 @@ class ArchiveModels implements ShouldQueue
      */
     public function handle(): void
     {
-        DB::transaction(function () {
-            // Step 1: Insert archive table records that are not already archived.
-            DB::insert(
-                'INSERT INTO archived_models (name, date, location, lat, long, created_at, updated_at, user_id, archived_by)
-                SELECT name, date, location, lat, long, created_at, ?, user_id, ? FROM models
-                WHERE user_id = ?
-                AND date BETWEEN ? AND ?
-                AND NOT EXISTS (
-                    SELECT 1 FROM archived_models
-                    WHERE archived_models.user_id = models.user_id
-                    AND archived_models.name = models.name
-                    AND archived_models.date = models.date
-                    AND archived_models.location = models.location
-                )',
-                [now(), $this->user->id, $this->creatorId, $this->startDate, $this->endDate]
-            );
+        $now = date('Y-m-d H:i:s');
 
-            // Step 2: Update archive table records that we are re-archiving.
-            DB::update(
-                'UPDATE archived_models
-                SET lat = models.lat, long = models.long, created_at = models.created_at, updated_at = ?, archived_by = ?
-                FROM models
+        // Step 1: Insert archive table records that are not already archived.
+        // A model is unique by user_id, name, date, and location.
+        DB::insert(
+            'INSERT INTO archived_models (name, date, location, lat, long, created_at, updated_at, user_id, archived_by)
+            SELECT name, date, location, lat, long, created_at, ?, user_id, ? FROM models
+            WHERE user_id = ?
+            AND date BETWEEN ? AND ?
+            AND NOT EXISTS (
+                SELECT 1 FROM archived_models
                 WHERE archived_models.user_id = models.user_id
                 AND archived_models.name = models.name
                 AND archived_models.date = models.date
                 AND archived_models.location = models.location
-                AND models.date BETWEEN ? AND ?',
-                [now(), $this->user->id, $this->startDate, $this->endDate]
-            );
+            )',
+            [$now, $this->user->id, $this->creatorId, $this->startDate, $this->endDate]
+        );
 
-            // Step 3: Delete records from the default table that are now archived.
-            DB::delete(
-                'DELETE FROM models
-                WHERE user_id = ?
-                AND date BETWEEN ? AND ?',
-                [$this->creatorId, $this->startDate, $this->endDate]
-            );
+        // Step 2: Update archive table records that we are re-archiving.
+        DB::update(
+            'UPDATE archived_models
+            SET lat = models.lat, long = models.long, created_at = models.created_at, updated_at = ?, archived_by = ?
+            FROM models
+            WHERE archived_models.user_id = models.user_id
+            AND archived_models.name = models.name
+            AND archived_models.date = models.date
+            AND archived_models.location = models.location
+            AND models.date BETWEEN ? AND ?',
+            [$now, $this->user->id, $this->startDate, $this->endDate]
+        );
 
-            // Step 4: Check the table for any records that are not archived but should be.
-            $remaining = DB::select(
-                'SELECT count(*) FROM models
-                WHERE user_id = ?
-                AND date BETWEEN ? AND ?',
-                [$this->creatorId, $this->startDate, $this->endDate]
-            );
+        // Step 3: Select models by user_id and date range which have different name, date, location, lat, and long to ensure that the records were successfully archived.
+        $archived = DB::select(
+            'SELECT count(*) FROM archived_models
+            JOIN models
+            ON archived_models.user_id = models.user_id
+            AND archived_models.name = models.name
+            AND archived_models.date = models.date
+            AND archived_models.location = models.location
+            AND archived_models.lat = models.lat
+            AND archived_models.long = models.long
+            WHERE archived_models.user_id = ?
+            AND archived_models.date BETWEEN ? AND ?',
+            [$this->creatorId, $this->startDate, $this->endDate]
+        );
 
-            if ($remaining > 0) {
-                throw new \Exception('Some records were not archived.');
-            }
-        });
+        // Step 3: Delete records from the default table that are now archived.
+        DB::delete(
+            'DELETE FROM models
+            WHERE user_id = ?
+            AND date BETWEEN ? AND ?',
+            [$this->creatorId, $this->startDate, $this->endDate]
+        );
+
+        // Step 4: Check the table for any records that were not archived but should be.
+        $remaining = DB::select(
+            'SELECT count(*) FROM models
+            WHERE user_id = ?
+            AND date BETWEEN ? AND ?',
+            [$this->creatorId, $this->startDate, $this->endDate]
+        );
+
+        if ($remaining > 0) {
+            throw new \Exception('Some records were not archived.');
+        }
     }
 }
