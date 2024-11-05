@@ -1,3 +1,0 @@
-#!/bin/bash
-# Initialize database.
-php artisan migrate:fresh --seed

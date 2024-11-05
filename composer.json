@@ -19,7 +19,6 @@
         "laravel-shift/blueprint": "^2.10",
         "laravel/breeze": "^2.0",
         "laravel/pint": "^1.0",
-        "laravel/sail": "^1.37",
         "laravel/tinker": "^2.8",
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^8.1",
