@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
+// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -11,12 +13,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        if (app()->isLocal()) {
-            $user = new \App\Models\User();
-            $user->name = 'Local User';
-            $user->email = 'user@local.dev';
-            $user->password = bcrypt('password');
-            $user->save();
-        }
+        // User::factory(10)->create();
+
+        User::factory()->create([
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+        ]);
     }
 }
