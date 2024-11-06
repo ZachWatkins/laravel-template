@@ -23,10 +23,9 @@ PHP and Composer are required to install and run this project. You can use my in
 ## Installation
 
 ```shell
-git clone https://github.com/zachwatkins/laravel-template laravel-app
-cd laravel-app
+git clone https://github.com/zachwatkins/laravel-template
+cd laravel-template
 npm install
-composer install
 composer create-project
 composer run dev
 ```
