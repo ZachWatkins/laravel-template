@@ -1,20 +1,62 @@
 models:
-  Post:
-    title: string:400
-    content: longtext
+  Part:
+    name: string:100
+    number: string:100
+    sku: string:100
+    description: text
+    price: decimal:8,2
+    weight: decimal:8,2
+    weight_unit: string:10
+    softDeletes
     published_at: nullable timestamp
+    relationships:
+      belongsTo: Manufacturer, PartType
+      hasMany: OrderItem
+      hasMany: Inventory
+  PartType:
+    name: string:100
+    relationships:
+      hasMany: Part
+  PartPhoto:
+    filename: string:100
+    published_at: nullable timestamp
+    softDeletes
+    relationships:
+      belongsTo: Part
+  Inventory:
+    quantity: integer
+    location: string:100
+    relationships:
+      belongsTo: Part
+  Order:
+    number: string:100
+    total: decimal:8,2
+    relationships:
+      belongsTo: Customer
+      hasMany: OrderItem
+  OrderItem:
+    quantity: integer
+    price: decimal:8,2
+    relationships:
+      belongsTo: Order
+      belongsTo: Part
+  Manufacturer:
+    name: string:100
+    website: string:100
+    phone: string:20
+    filename: string:100
+    relationships:
+      hasMany: Part
+  Customer:
+    name: string:100
+    email: string:100
+    phone: string:20
+    address: text
+    relationships:
+      hasMany: Order
 
 controllers:
-  Post:
-    resource: paginate:posts
+  PartController:
+    resource: paginate:parts
 
-    # store:
-    #   validate: title, content
-    #   save: post
-    #   send: ReviewNotification to:post.author with:post
-    #   dispatch: SyncMedia with:post
-    #   fire: NewPost with:post
-    #   flash: post.title
-    #   redirect: post.index
-
-seeders: Post
+seeders: Part
