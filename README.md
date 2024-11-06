@@ -34,11 +34,9 @@ composer run dev
 
 Laravel first-party packages and features:
 
-1. **Breeze (Laravel Package)** for user registration, login, authentication, and profile management. Also includes PHPUnit tests for authentication features.
-2. **React with Inertia.js** for building single-page applications.
-3. **Queues** for performing tasks asynchronously.
-4. **Migrations** for database schema management.
-5. **Tests** for peace of mind.
+1. **Breeze (Laravel Package)** for user registration, login, authentication, and profile management. Also includes PestPHP tests for authentication features.
+2. **React with TypeScript and Inertia.js** for building single-page applications with type safety.
+3. **Tests** for peace of mind.
 
 ## Routes
 
