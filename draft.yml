@@ -14,7 +14,7 @@ models:
     relationships:
       belongsTo: PartType, Manufacturer
       hasOne: PartWebpage
-      hasMany: OrderItem, PartPhoto
+      hasMany: OrderItem, PartPhoto, PartLowInventoryMonitor
   PartType:
     name: string:100
     relationships:
@@ -29,6 +29,16 @@ models:
     content: text
     relationships:
       belongsTo: Part
+  PartLowInventoryMonitor:
+    active: boolean default:true
+    threshold: integer default:10
+    relationships:
+      hasMany: Part, MonitorSubscriber
+  MonitorSubscriber:
+    name: string:100
+    email: string:
+    relationships:
+      belongsTo: PartLowInventoryMonitor
   Order:
     number: string:100
     status: enum:paid,pending,processing,shipped,delivered,canceled,returned,partially_refunded,refunded,completed default:pending index
