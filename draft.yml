@@ -14,7 +14,7 @@ models:
     relationships:
       belongsTo: PartType, Manufacturer
       hasOne: PartWebpage
-      hasMany: OrderItem, PartPhoto, PartLowInventoryMonitor
+      hasMany: OrderItem, PartPhoto, Monitor
   PartType:
     name: string:100
     softDeletes
@@ -30,30 +30,48 @@ models:
     content: text
     relationships:
       belongsTo: Part
-  PartLowInventoryMonitor:
-    active: boolean default:true
-    threshold: integer default:10
+  ShoppingCart:
     relationships:
-      hasMany: Part, MonitorSubscriber
-  MonitorSubscriber:
-    name: string:100
-    email: string:100
-    relationships:
-      belongsTo: PartLowInventoryMonitor
+      belongsTo: Customer
+      hasMany: OrderItem
   Order:
-    number: string:100
-    status: enum:paid,pending,processing,shipped,delivered,canceled,returned,partially_refunded,refunded,completed default:pending index
+    number: integer default:1 index
+    status: enum:paid,processing,shipped,delivered,canceled,returned,partially_refunded,refunded,completed default:paid index
     total: decimal:10,2
     notes: text
     relationships:
       belongsTo: Customer, CustomerPaymentMethod, CustomerShippingAddress, CustomerBillingAddress
+      hasOne: ShoppingCart
       hasMany: OrderItem
+    indexes:
+      - unique: customer_id, number
   OrderItem:
     quantity: integer
     price: decimal:8,2
     relationships:
       belongsTo: Order
       belongsTo: Part
+  Customer:
+    phone: string:20
+    shipping_street_1: string:100
+    shipping_street_2: string:100
+    shipping_city: string:100
+    shipping_state: string:100
+    shipping_zip_code: string:10
+    shipping_instructions: string:500
+    billing_street_1: string:100
+    billing_street_2: string:100
+    billing_city: string:100
+    billing_state: string:100
+    billing_zip_code: string:10
+    billing_card_name: string:100
+    billing_card_number: string:20
+    billing_card_expiration: string:5
+    billing_card_cvv: string:3
+    relationships:
+      belongsTo: User
+      hasOne: Order:shopping_cart
+      hasMany: Order
   Manufacturer:
     name: string:100
     website: string:100
@@ -62,57 +80,33 @@ models:
     softDeletes
     relationships:
       hasMany: Part
-  Customer:
-    phone: string:20
+  Monitor:
+    active: boolean default:true
+    threshold: integer default:10
     relationships:
-      belongsTo: User
-      hasOne: CustomerShippingAddress:default_shipping_address, CustomerBillingAddress:default_billing_address, CustomerPaymentMethod:payment_method
-      hasMany: Order, CustomerShippingAddress, CustomerBillingAddress
-  CustomerPaymentMethod:
+      hasMany: Part, MonitorSubscriber
+  MonitorSubscriber:
     name: string:100
+    email: string:100
     relationships:
-      belongsTo: Customer
-      hasMany: PaymentCard
-  PaymentCard:
-    name_on_card: string:100
-    number: string:20
-    expiration: string:5
-    cvv: string:3
-    zip_code: string:10
-    relationships:
-      belongsTo: Customer, City, State, CustomerPaymentMethod
-  CustomerShippingAddress:
-    street_1: string:100
-    street_2: string:100
-    zip_code: string:10
-    details: text
-    relationships:
-      belongsTo: Customer, City, State
-  CustomerBillingAddress:
-    street_1: string:100
-    street_2: string:100
-    zip_code: string:10
-    relationships:
-      belongsTo: Customer, City, State
-  City:
-    name: string:100
-    relationships:
-      hasMany: CustomerBillingAddress, CustomerShippingAddress, PaymentCard
-  State:
-    name: string:100
-    relationships:
-      hasMany: CustomerBillingAddress, CustomerShippingAddress, PaymentCard
+      belongsTo: Monitor
 
 controllers:
   Part:
     resource: paginate:parts
   PartWebpage:
-    resource: paginate:part_webpages
-  PartLowInventoryMonitor:
-    resource: paginate:part_low_inventory_monitors
-  MonitorSubscriber:
-    resource: paginate:monitor_subscribers
+    resource
+  Customer:
+    resource
+  ShoppingCart:
+    resource: all
+    order:
+      find: shopping_cart.id
   Order:
-    resource: paginate:orders
+    resource: index, show
+  Monitor:
+    resource
+  MonitorSubscriber:
+    resource
 
 seeders: PartType, City, State
