@@ -17,6 +17,7 @@ models:
       hasMany: OrderItem, PartPhoto, PartLowInventoryMonitor
   PartType:
     name: string:100
+    softDeletes
     relationships:
       hasMany: Part
   PartWebpage:
@@ -36,7 +37,7 @@ models:
       hasMany: Part, MonitorSubscriber
   MonitorSubscriber:
     name: string:100
-    email: string:
+    email: string:100
     relationships:
       belongsTo: PartLowInventoryMonitor
   Order:
@@ -58,6 +59,7 @@ models:
     website: string:100
     phone: string:20
     filename: string:100
+    softDeletes
     relationships:
       hasMany: Part
   Customer:
