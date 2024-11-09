@@ -104,7 +104,15 @@ models:
       hasMany: CustomerBillingAddress, CustomerShippingAddress, PaymentCard
 
 controllers:
-  PartController:
+  Part:
     resource: paginate:parts
+  PartWebpage:
+    resource: paginate:part_webpages
+  PartLowInventoryMonitor:
+    resource: paginate:part_low_inventory_monitors
+  MonitorSubscriber:
+    resource: paginate:monitor_subscribers
+  Order:
+    resource: paginate:orders
 
 seeders: PartType, City, State
