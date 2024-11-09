@@ -19,6 +19,7 @@
             </div>
 
             <!-- Settings Dropdown -->
+            @if (Auth::check())
             <div class="hidden sm:flex sm:items-center sm:ml-6">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
@@ -43,7 +44,7 @@
                             @csrf
 
                             <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
+                                onclick="event.preventDefault();
                                                 this.closest('form').submit();">
                                 {{ __('Log Out') }}
                             </x-dropdown-link>
@@ -51,6 +52,7 @@
                     </x-slot>
                 </x-dropdown>
             </div>
+            @endif
 
             <!-- Hamburger -->
             <div class="-mr-2 flex items-center sm:hidden">
@@ -73,6 +75,7 @@
         </div>
 
         <!-- Responsive Settings Options -->
+        @if (Auth::check())
         <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
             <div class="px-4">
                 <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->name }}</div>
@@ -89,12 +92,13 @@
                     @csrf
 
                     <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
+                        onclick="event.preventDefault();
                                         this.closest('form').submit();">
                         {{ __('Log Out') }}
                     </x-responsive-nav-link>
                 </form>
             </div>
         </div>
+        @endif
     </div>
 </nav>

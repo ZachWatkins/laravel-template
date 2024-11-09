@@ -124,6 +124,20 @@
                     </div>
                 </div>
 
+                <div class="mt-16">
+                    <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">Recent Posts</h2>
+                    <ul class="mt-4 space-y-4">
+                        @php($posts = App\Models\Post::latest()->take(5)->get())
+                        @foreach ($posts as $post)
+                        <li class="p-4 rounded-lg shadow-md">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">{{ $post->title }}</h3>
+                            <p class="mt-2 text-gray-600 dark:text-gray-400">{{ $post->content }}</p>
+                            <a href="{{ route('posts.show', $post) }}" class="mt-4 inline-block text-red-500 hover:text-red-700">Read more</a>
+                        </li>
+                        @endforeach
+                    </ul>
+                </div>
+
                 <div class="flex justify-center mt-16 px-0 sm:items-center sm:justify-between">
                     <div class="text-center text-sm text-gray-500 dark:text-gray-400 sm:text-left">
                         <div class="flex items-center gap-4">

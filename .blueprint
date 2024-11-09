@@ -1,0 +1,17 @@
+created:
+    - app/Http/Controllers/PostController.php
+    - database/factories/PostFactory.php
+    - database/migrations/2024_09_15_204314_create_posts_table.php
+    - app/Models/Post.php
+    - database/seeders/PostSeeder.php
+    - tests/Feature/Http/Controllers/PostControllerTest.php
+    - app/Http/Requests/PostStoreRequest.php
+    - app/Http/Requests/PostUpdateRequest.php
+    - resources/views/post/index.blade.php
+    - resources/views/post/create.blade.php
+    - resources/views/post/show.blade.php
+    - resources/views/post/edit.blade.php
+updated:
+    - routes/web.php
+models:
+    Post: { title: 'string:400', content: longtext, published_at: 'nullable timestamp' }
