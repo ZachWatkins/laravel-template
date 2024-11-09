@@ -63,11 +63,9 @@ models:
     relationships:
       hasMany: Part
   Customer:
-    name: string:100
-    email: string:100
     phone: string:20
-    address: text
     relationships:
+      belongsTo: User
       hasOne: CustomerShippingAddress:default_shipping_address, CustomerBillingAddress:default_billing_address, CustomerPaymentMethod:payment_method
       hasMany: Order, CustomerShippingAddress, CustomerBillingAddress
   CustomerPaymentMethod:
