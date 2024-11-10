@@ -25,3 +25,18 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+
+
+
+Route::resource('part-webpages', App\Http\Controllers\PartWebpageController::class);
+
+Route::resource('customers', App\Http\Controllers\CustomerController::class);
+
+Route::get('shopping-carts/order', [App\Http\Controllers\ShoppingCartController::class, 'order']);
+
+Route::resource('orders', App\Http\Controllers\OrderController::class)->only('index', 'show');
+
+Route::resource('monitors', App\Http\Controllers\MonitorController::class);
+
+Route::resource('monitor-subscribers', App\Http\Controllers\MonitorSubscriberController::class);
