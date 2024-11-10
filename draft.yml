@@ -49,8 +49,7 @@ models:
     quantity: integer
     price: decimal:8,2
     relationships:
-      belongsTo: Order
-      belongsTo: Part
+      belongsTo: Order, Part
   Customer:
     phone: string:20
     shipping_street_1: string:100
