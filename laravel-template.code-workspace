@@ -22,41 +22,14 @@
                 "label": "Launch",
                 "dependsOrder": "sequence",
                 "dependsOn": [
-                    "Start Docker Desktop",
-                    "Sail Up"
+                    "Start Application",
                 ],
             },
             {
-                "label": "Start Docker Desktop",
+                "label": "Start Application",
                 "type": "shell",
-                "command": "start",
-                "args": ["docker"],
-                "windows": {
-                    "command": "Start-Process",
-                    "args": [
-                        "C:\\Program Files\\Docker\\Docker\\Docker Desktop.exe"
-                    ],
-                },
-            },
-            {
-                "label": "Sail Up",
-                "type": "shell",
-                "command": "./vendor/bin/sail",
-                "args": ["up", "-d"],
-                "problemMatcher": [
-                    "$msCompile"
-                ],
-                "windows": {
-                    "options": {
-                        "shell": {
-                            "executable": "C:\\Windows\\system32\\wsl.exe",
-                            "args": [
-                                "--cd",
-                                "${workspaceFolder}"
-                            ]
-                        }
-                    }
-                },
+                "command": "composer",
+                "args": ["run", "dev"],
             },
             {
                 "label": "Git: Prune Branches Not In Origin",

@@ -1,6 +1,6 @@
 #!/bin/bash
 # https://packages.sury.org/php/README.txt
-# Install PHP and necessary extensions for calling Sail from the command line.
+# Install PHP and necessary extensions.
 if [ "$(whoami)" != "root" ]; then
     SUDO=sudo
 fi
@@ -22,5 +22,4 @@ ${SUDO} apt install php8.1-tokenizer
 ${SUDO} apt install php8.1-xml
 ${SUDO} apt install php8.1-zip
 ${SUDO} apt install php8.1-sqlite3
-${SUDO} apt install php8.1-mysql
 ${SUDO} apt install composer
