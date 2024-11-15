@@ -14,7 +14,7 @@ models:
     relationships:
       belongsTo: PartType, Manufacturer
       hasOne: PartWebpage
-      hasMany: OrderItem, PartPhoto, Monitor
+      hasMany: OrderItem, PartInventoryMonitor
   PartType:
     name: string:100
     softDeletes
@@ -33,62 +33,94 @@ models:
   ShoppingCart:
     relationships:
       belongsTo: Customer
-      hasMany: OrderItem
+      belongsToMany: Part
+    indexes:
+      - unique: customer_id
   Order:
     number: integer default:1 index
     status: enum:paid,processing,shipped,delivered,canceled,returned,partially_refunded,refunded,completed default:paid index
     total: decimal:10,2
     notes: text
     relationships:
-      belongsTo: Customer, CustomerPaymentMethod, CustomerShippingAddress, CustomerBillingAddress
-      hasOne: ShoppingCart
+      belongsTo: Customer
       hasMany: OrderItem
+      hasOne: OrderDestination, OrderPayment
     indexes:
       - unique: customer_id, number
   OrderItem:
     quantity: integer
     price: decimal:8,2
+    number: string:100 index
     relationships:
       belongsTo: Order, Part
+  OrderDestination:
+    street_1: string:100
+    street_2: string:100
+    city: string:100
+    state: string:100
+    zip_code: string:10
+    instructions: string:500
+    relationships:
+      belongsTo: Order
+  OrderPayment:
+    total: decimal:10,2
+    billed_card_name: string:100
+    billed_card_number: string:20
+    billed_card_expiration: string:5
+    billed_street_1: string:100
+    billed_street_2: string:100
+    billed_city: string:100
+    billed_state: string:100
+    billed_zip_code: string:10
+    relationships:
+      belongsTo: Order
   Customer:
+    relationships:
+      belongsTo: User
+      hasOne: ShoppingCart, CustomerShippingDestination, CustomerPaymentMethod
+      hasMany: Order
+  CustomerContactInfo:
     phone: string:20
-    shipping_street_1: string:100
-    shipping_street_2: string:100
-    shipping_city: string:100
-    shipping_state: string:100
-    shipping_zip_code: string:10
-    shipping_instructions: string:500
+    relationships:
+      belongsTo: Customer
+  CustomerShippingDestination:
+    street_1: string:100
+    street_2: string:100
+    city: string:100
+    state: string:100
+    zip_code: string:10
+    instructions: string:500
+    relationships:
+      belongsTo: Customer
+  CustomerPaymentMethod:
+    total: decimal:10,2
+    billing_card_name: string:100
+    billing_card_number: string:20
+    billing_card_expiration: string:5
     billing_street_1: string:100
     billing_street_2: string:100
     billing_city: string:100
     billing_state: string:100
     billing_zip_code: string:10
-    billing_card_name: string:100
-    billing_card_number: string:20
-    billing_card_expiration: string:5
-    billing_card_cvv: string:3
     relationships:
-      belongsTo: User
-      hasOne: Order:shopping_cart
-      hasMany: Order
+      belongsTo: Customer
   Manufacturer:
     name: string:100
-    website: string:100
-    phone: string:20
+    description: string:400
     filename: string:100
     softDeletes
     relationships:
       hasMany: Part
-  Monitor:
+  PartInventoryMonitor:
     active: boolean default:true
     threshold: integer default:10
     relationships:
       hasMany: Part, MonitorSubscriber
-  MonitorSubscriber:
+  PartInventoryMonitorSubscriber:
     name: string:100
     email: string:100
     relationships:
-      belongsTo: Monitor
+      belongsTo: PartInventoryMonitor
 
 controllers:
   Part:
@@ -97,10 +129,14 @@ controllers:
     resource
   Customer:
     resource
+  CustomerContactInfo:
+    resource
+  CustomerShippingDestination:
+    resource
+  CustomerPaymentMethod:
+    resource
   ShoppingCart:
-    resource: all
-    order:
-      find: shopping_cart.id
+    resource
   Order:
     resource: index, show
   Monitor:
@@ -108,4 +144,4 @@ controllers:
   MonitorSubscriber:
     resource
 
-seeders: PartType, City, State
+seeders: PartType
