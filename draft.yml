@@ -4,6 +4,7 @@ models:
     number: string:100 index
     name: string:100
     sku: string:100
+    enabled: boolean default:true
     inventory: integer
     price: decimal:8,2
     weight: decimal:8,2
@@ -14,7 +15,12 @@ models:
     relationships:
       belongsTo: PartType, Manufacturer
       hasOne: PartWebpage
-      hasMany: OrderItem, PartInventoryMonitor
+      hasMany: OrderItem, PartInventoryMonitor, PartImage
+  PartImage:
+    type: enum:thumbnail,main,additional default:additional
+    path: string:255
+    relationships:
+      belongsTo: Part
   PartType:
     name: string:100
     softDeletes
@@ -38,13 +44,18 @@ models:
       - unique: customer_id
   Order:
     number: integer default:1 index
-    status: enum:paid,processing,shipped,delivered,canceled,returned,partially_refunded,refunded,completed default:paid index
+    payment_state: enum:pending,paid,partially_refunded,refunded default:pending
+    shipping_state: enum:pending,shipped,delivered,returned default:pending
+    items_total: integer
     total: decimal:10,2
+    token_value: string:255 nullable
+    customer_ip: string:255 nullable
+    created_by_guest: boolean default:false
     notes: text
     relationships:
-      belongsTo: Customer
+      belongsTo: Customer, ShippingAddress, BillingAddress, Currency, Locale
       hasMany: OrderItem
-      hasOne: OrderDestination, OrderPayment
+      hasOne: ShippingAddress, BillingAddress, OrderPayment
     indexes:
       - unique: customer_id, number
   OrderItem:
@@ -54,54 +65,86 @@ models:
     relationships:
       belongsTo: Order, Part
   OrderDestination:
-    street_1: string:100
-    street_2: string:100
+    address_line_1: string:255
+    address_line_2: string:255
     city: string:100
-    state: string:100
-    zip_code: string:10
-    instructions: string:500
+    state_province_region: string:100
+    postal_code: string:20
+    country: string:100
+    latitude: decimal:10,8
+    longitude: decimal:11,8
+    space_station: string:100
+    planet_or_moon: string:100
+    star_system: string:100
+    sector: string:100
+    quadrant: string:100
     relationships:
-      belongsTo: Order
+      belongsTo: OrderPayment
   OrderPayment:
     total: decimal:10,2
-    billed_card_name: string:100
-    billed_card_number: string:20
-    billed_card_expiration: string:5
-    billed_street_1: string:100
-    billed_street_2: string:100
-    billed_city: string:100
-    billed_state: string:100
-    billed_zip_code: string:10
     relationships:
       belongsTo: Order
+  OrderPaymentCard:
+    name: string:100
+    number: string:20
+    expiration: string:5
+    relationships:
+      belongsTo: OrderPayment, BillingAddress:
+  BillingAddress:
+    first_name: string:255
+    last_name: string:255
+    phone_number: string:255 nullable
+    street: string:255
+    company: string:255 nullable
+    city: string:100
+    postal_code: string:20
+    country_code: string:255
+    province_code: string:255 nullable
+    province_name: string:255 nullable
+    state_province_region: string:100
+    latitude: decimal:10,8
+    longitude: decimal:11,8
+    space_station: string:100
+    planet_or_moon: string:100
+    star_system: string:100
+    sector: string:100
+    quadrant: string:100
+  ShippingAddress:
+    first_name: string:255
+    last_name: string:255
+    phone_number: string:255 nullable
+    street: string:255
+    company: string:255 nullable
+    city: string:100
+    postal_code: string:20
+    country_code: string:255
+    province_code: string:255 nullable
+    province_name: string:255 nullable
+    state_province_region: string:100
+    latitude: decimal:10,8
+    longitude: decimal:11,8
+    space_station: string:100
+    planet_or_moon: string:100
+    star_system: string:100
+    sector: string:100
+    quadrant: string:100
   Customer:
+    birthday: date nullable
+    phone_number: string:20 nullable
+    subscribed_to_newsletter: boolean default:false
     relationships:
-      belongsTo: User
-      hasOne: ShoppingCart, CustomerShippingDestination, CustomerPaymentMethod
+      belongsTo: User, ShippingAddress, BillingAddress
+      hasOne: ShoppingCart, CustomerPaymentMethod
       hasMany: Order
-  CustomerContactInfo:
-    phone: string:20
-    relationships:
-      belongsTo: Customer
-  CustomerShippingDestination:
+  CustomerPaymentMethod:
+    card_name: string:100
+    card_number: string:20
+    card_expiration: string:5
     street_1: string:100
     street_2: string:100
     city: string:100
     state: string:100
     zip_code: string:10
-    instructions: string:500
-    relationships:
-      belongsTo: Customer
-  CustomerPaymentMethod:
-    total: decimal:10,2
-    billing_card_name: string:100
-    billing_card_number: string:20
-    billing_card_expiration: string:5
-    billing_street_1: string:100
-    billing_street_2: string:100
-    billing_city: string:100
-    billing_state: string:100
-    billing_zip_code: string:10
     relationships:
       belongsTo: Customer
   Manufacturer:
@@ -121,6 +164,27 @@ models:
     email: string:100
     relationships:
       belongsTo: PartInventoryMonitor
+  Currency:
+    code: string:3
+    name: string:100
+    symbol: string:10
+    relationships:
+      hasMany: Order
+  Locale:
+    code: string:12 primary
+    name: string:100
+  Country:
+    code: string:2 primary
+    name: string:100
+    enabled: boolean default:true
+  Province:
+    code: string:255 primary
+    name: string:255
+    abbreviation: string:255 nullable
+    relationships:
+      belongsTo: Country
+    indexes:
+      - unique: country_code, name
 
 controllers:
   Part:
@@ -131,14 +195,12 @@ controllers:
     resource
   CustomerContactInfo:
     resource
-  CustomerShippingDestination:
-    resource
   CustomerPaymentMethod:
     resource
   ShoppingCart:
     resource
   Order:
-    resource: index, show
+    resource: index, store, show
   Monitor:
     resource
   MonitorSubscriber:
