@@ -155,7 +155,7 @@ return [
         'mail' => \Blueprint\Generators\Statements\MailGenerator::class,
         'notification' => \Blueprint\Generators\Statements\NotificationGenerator::class,
         'resource' => \Blueprint\Generators\Statements\ResourceGenerator::class,
-        'view' => \Blueprint\Generators\Statements\ViewGenerator::class,
+        'view' => \App\Blueprint\ReactViewGenerator::class,
         'policy' => \Blueprint\Generators\PolicyGenerator::class,
     ],
 
