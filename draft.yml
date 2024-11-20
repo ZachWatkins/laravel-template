@@ -1,4 +1,20 @@
 models:
+  Warehouse:
+    name: string:100
+    description: string:400
+    address_line_1: string:255
+    address_line_2: string:255
+    city: string:100 nullable
+    state_province_region: string:100 nullable
+    postal_code: string:20 nullable
+    country_code: string:100 nullable
+    latitude: decimal:10,8 nullable
+    longitude: decimal:11,8 nullable
+    space_station: string:100 nullable
+    planet_or_moon: string:100 nullable
+    star_system: string:100 nullable
+    sector: string:100 nullable
+    quadrant: string:100 nullable
   Part:
     status: enum:active,inactive default:active index
     number: string:100 index
@@ -69,16 +85,16 @@ models:
     address_line_1: string:255
     address_line_2: string:255
     city: string:100
-    state_province_region: string:100
-    postal_code: string:20
-    country: string:100
-    latitude: decimal:10,8
-    longitude: decimal:11,8
-    space_station: string:100
-    planet_or_moon: string:100
-    star_system: string:100
-    sector: string:100
-    quadrant: string:100
+    state_province_region: string:100 nullable
+    postal_code: string:20 nullable
+    country_code: string:100 nullable
+    latitude: decimal:10,8 nullable
+    longitude: decimal:11,8 nullable
+    space_station: string:100 nullable
+    planet_or_moon: string:100 nullable
+    star_system: string:100 nullable
+    sector: string:100 nullable
+    quadrant: string:100 nullable
     relationships:
       belongsTo: OrderPayment
   OrderPayment:
@@ -95,21 +111,22 @@ models:
     first_name: string:255
     last_name: string:255
     phone_number: string:255 nullable
-    street: string:255
+    address_line_1: string:255
+    address_line_2: string:255 nullable
     company: string:255 nullable
-    city: string:100
-    postal_code: string:20
-    country_code: string:255
+    city: string:100 nullable
+    postal_code: string:20 nullable
+    country_code: string:100 nullable
     province_code: string:255 nullable
     province_name: string:255 nullable
     state_province_region: string:100
-    latitude: decimal:10,8
-    longitude: decimal:11,8
-    space_station: string:100
-    planet_or_moon: string:100
-    star_system: string:100
-    sector: string:100
-    quadrant: string:100
+    latitude: decimal:10,8 nullable
+    longitude: decimal:11,8 nullable
+    space_station: string:100 nullable
+    planet_or_moon: string:100 nullable
+    star_system: string:100 nullable
+    sector: string:100 nullable
+    quadrant: string:100 nullable
   ShippingAddress:
     first_name: string:255
     last_name: string:255
@@ -118,17 +135,17 @@ models:
     company: string:255 nullable
     city: string:100
     postal_code: string:20
-    country_code: string:255
+    country_code: string:100 nullable
     province_code: string:255 nullable
     province_name: string:255 nullable
     state_province_region: string:100
-    latitude: decimal:10,8
-    longitude: decimal:11,8
-    space_station: string:100
-    planet_or_moon: string:100
-    star_system: string:100
-    sector: string:100
-    quadrant: string:100
+    latitude: decimal:10,8 nullable
+    longitude: decimal:11,8 nullable
+    space_station: string:100 nullable
+    planet_or_moon: string:100 nullable
+    star_system: string:100 nullable
+    sector: string:100 nullable
+    quadrant: string:100 nullable
   Customer:
     birthday: date nullable
     phone_number: string:20 nullable
