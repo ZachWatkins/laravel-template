@@ -6,8 +6,8 @@ models:
     sku: string:100
     enabled: boolean default:true
     inventory: integer
-    price: decimal:8,2
-    weight: decimal:8,2
+    unit_price: integer # Assume last 2 digits are cents.
+    weight: integer # Assume last 2 digits are decimals.
     weight_unit: string:10
     filename: string:100
     published_at: nullable timestamp
@@ -60,8 +60,9 @@ models:
       - unique: customer_id, number
   OrderItem:
     quantity: integer
-    price: decimal:8,2
-    number: string:100 index
+    unit_price: integer # Assume last 2 digits are cents.
+    total: integer # Assume last 2 digits are cents.
+    part_name: string:255 nullable
     relationships:
       belongsTo: Order, Part
   OrderDestination:
@@ -206,4 +207,4 @@ controllers:
   MonitorSubscriber:
     resource
 
-seeders: PartType
+seeders: PartType, Manufacturer, Currency, Locale, Country, Province
