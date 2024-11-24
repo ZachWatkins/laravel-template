@@ -29,7 +29,7 @@ class PartWebpageController extends Controller
 
         $request->session()->flash('partWebpage.id', $partWebpage->id);
 
-        return redirect()->route('partWebpages.index');
+        return redirect()->route('part-webpages.index');
     }
 
     public function show(Request $request, PartWebpage $partWebpage): View
@@ -48,13 +48,13 @@ class PartWebpageController extends Controller
 
         $request->session()->flash('partWebpage.id', $partWebpage->id);
 
-        return redirect()->route('partWebpages.index');
+        return redirect()->route('part-webpages.index');
     }
 
     public function destroy(Request $request, PartWebpage $partWebpage): RedirectResponse
     {
         $partWebpage->delete();
 
-        return redirect()->route('partWebpages.index');
+        return redirect()->route('part-webpages.index');
     }
 }

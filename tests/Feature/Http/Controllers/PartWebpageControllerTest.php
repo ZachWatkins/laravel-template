@@ -74,7 +74,7 @@ test('store saves and redirects', function (): void {
     expect($partWebpages)->toHaveCount(1);
     $partWebpage = $partWebpages->first();
 
-    $response->assertRedirect(route('partWebpages.index'));
+    $response->assertRedirect(route('part-webpages.index'));
     $response->assertSessionHas('partWebpage.id', $partWebpage->id);
 });
 
@@ -132,7 +132,7 @@ test('update redirects', function (): void {
 
     $partWebpage->refresh();
 
-    $response->assertRedirect(route('partWebpages.index'));
+    $response->assertRedirect(route('part-webpages.index'));
     $response->assertSessionHas('partWebpage.id', $partWebpage->id);
 
     expect($status)->toEqual($partWebpage->status);
@@ -151,7 +151,7 @@ test('destroy deletes and redirects', function (): void {
 
     $response = delete(route('part-webpages.destroy', $partWebpage));
 
-    $response->assertRedirect(route('partWebpages.index'));
+    $response->assertRedirect(route('part-webpages.index'));
 
     assertModelMissing($partWebpage);
 });
