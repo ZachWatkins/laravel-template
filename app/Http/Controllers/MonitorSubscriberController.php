@@ -11,14 +11,14 @@ use Illuminate\View\View;
 
 class MonitorSubscriberController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request): View
     {
         $monitorSubscribers = MonitorSubscriber::all();
 
         return view('monitorSubscriber.index', compact('monitorSubscribers'));
     }
 
-    public function create(Request $request): Response
+    public function create(Request $request): View
     {
         return view('monitorSubscriber.create');
     }
@@ -32,12 +32,12 @@ class MonitorSubscriberController extends Controller
         return redirect()->route('monitorSubscribers.index');
     }
 
-    public function show(Request $request, MonitorSubscriber $monitorSubscriber): Response
+    public function show(Request $request, MonitorSubscriber $monitorSubscriber): View
     {
         return view('monitorSubscriber.show', compact('monitorSubscriber'));
     }
 
-    public function edit(Request $request, MonitorSubscriber $monitorSubscriber): Response
+    public function edit(Request $request, MonitorSubscriber $monitorSubscriber): View
     {
         return view('monitorSubscriber.edit', compact('monitorSubscriber'));
     }

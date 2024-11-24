@@ -11,14 +11,14 @@ use Illuminate\View\View;
 
 class PartWebpageController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request): View
     {
         $partWebpages = PartWebpage::all();
 
         return view('partWebpage.index', compact('partWebpages'));
     }
 
-    public function create(Request $request): Response
+    public function create(Request $request): View
     {
         return view('partWebpage.create');
     }
@@ -32,12 +32,12 @@ class PartWebpageController extends Controller
         return redirect()->route('partWebpages.index');
     }
 
-    public function show(Request $request, PartWebpage $partWebpage): Response
+    public function show(Request $request, PartWebpage $partWebpage): View
     {
         return view('partWebpage.show', compact('partWebpage'));
     }
 
-    public function edit(Request $request, PartWebpage $partWebpage): Response
+    public function edit(Request $request, PartWebpage $partWebpage): View
     {
         return view('partWebpage.edit', compact('partWebpage'));
     }

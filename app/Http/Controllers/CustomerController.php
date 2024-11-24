@@ -11,14 +11,14 @@ use Illuminate\View\View;
 
 class CustomerController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request): View
     {
         $customers = Customer::all();
 
         return view('customer.index', compact('customers'));
     }
 
-    public function create(Request $request): Response
+    public function create(Request $request): View
     {
         return view('customer.create');
     }
@@ -32,12 +32,12 @@ class CustomerController extends Controller
         return redirect()->route('customers.index');
     }
 
-    public function show(Request $request, Customer $customer): Response
+    public function show(Request $request, Customer $customer): View
     {
         return view('customer.show', compact('customer'));
     }
 
-    public function edit(Request $request, Customer $customer): Response
+    public function edit(Request $request, Customer $customer): View
     {
         return view('customer.edit', compact('customer'));
     }
