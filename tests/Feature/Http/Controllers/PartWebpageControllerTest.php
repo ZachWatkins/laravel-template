@@ -59,6 +59,7 @@ test('store saves and redirects', function (): void {
         'content' => $content,
         'part_id' => $part->id,
     ]);
+    $response->assertSessionHasNoErrors();
 
     $partWebpages = PartWebpage::query()
         ->where('status', $status)
