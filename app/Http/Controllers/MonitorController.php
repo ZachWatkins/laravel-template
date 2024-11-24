@@ -23,7 +23,7 @@ class MonitorController extends Controller
         return view('monitor.create');
     }
 
-    public function store(MonitorStoreRequest $request): Response
+    public function store(MonitorStoreRequest $request): RedirectResponse
     {
         $monitor = Monitor::create($request->validated());
 
@@ -42,7 +42,7 @@ class MonitorController extends Controller
         return view('monitor.edit', compact('monitor'));
     }
 
-    public function update(MonitorUpdateRequest $request, Monitor $monitor): Response
+    public function update(MonitorUpdateRequest $request, Monitor $monitor): RedirectResponse
     {
         $monitor->update($request->validated());
 
@@ -51,7 +51,7 @@ class MonitorController extends Controller
         return redirect()->route('monitors.index');
     }
 
-    public function destroy(Request $request, Monitor $monitor): Response
+    public function destroy(Request $request, Monitor $monitor): RedirectResponse
     {
         $monitor->delete();
 

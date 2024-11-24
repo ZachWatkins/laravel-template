@@ -23,7 +23,7 @@ class CustomerController extends Controller
         return view('customer.create');
     }
 
-    public function store(CustomerStoreRequest $request): Response
+    public function store(CustomerStoreRequest $request): RedirectResponse
     {
         $customer = Customer::create($request->validated());
 
@@ -42,7 +42,7 @@ class CustomerController extends Controller
         return view('customer.edit', compact('customer'));
     }
 
-    public function update(CustomerUpdateRequest $request, Customer $customer): Response
+    public function update(CustomerUpdateRequest $request, Customer $customer): RedirectResponse
     {
         $customer->update($request->validated());
 
@@ -51,7 +51,7 @@ class CustomerController extends Controller
         return redirect()->route('customers.index');
     }
 
-    public function destroy(Request $request, Customer $customer): Response
+    public function destroy(Request $request, Customer $customer): RedirectResponse
     {
         $customer->delete();
 

@@ -23,7 +23,7 @@ class PartWebpageController extends Controller
         return view('partWebpage.create');
     }
 
-    public function store(PartWebpageStoreRequest $request): Response
+    public function store(PartWebpageStoreRequest $request): RedirectResponse
     {
         $partWebpage = PartWebpage::create($request->validated());
 
@@ -42,7 +42,7 @@ class PartWebpageController extends Controller
         return view('partWebpage.edit', compact('partWebpage'));
     }
 
-    public function update(PartWebpageUpdateRequest $request, PartWebpage $partWebpage): Response
+    public function update(PartWebpageUpdateRequest $request, PartWebpage $partWebpage): RedirectResponse
     {
         $partWebpage->update($request->validated());
 
@@ -51,7 +51,7 @@ class PartWebpageController extends Controller
         return redirect()->route('partWebpages.index');
     }
 
-    public function destroy(Request $request, PartWebpage $partWebpage): Response
+    public function destroy(Request $request, PartWebpage $partWebpage): RedirectResponse
     {
         $partWebpage->delete();
 
