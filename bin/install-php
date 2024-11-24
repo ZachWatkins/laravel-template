@@ -13,16 +13,16 @@ if [ "${IS_DEBIAN}" == "Debian" ]; then
     ${SUDO} sh -c 'echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list'
 fi
 ${SUDO} apt-get update
-${SUDO} apt install php8.1 -y
+${SUDO} apt install php8.3 -y
 # Install required PHP extensions for Laravel 10.
-${SUDO} apt install php8.1-ctype
-${SUDO} apt install php8.1-curl
-${SUDO} apt install php8.1-dom
-${SUDO} apt install php8.1-fileinfo
-${SUDO} apt install php8.1-mbstring
-${SUDO} apt install php8.1-pdo
-${SUDO} apt install php8.1-tokenizer
-${SUDO} apt install php8.1-xml
-${SUDO} apt install php8.1-zip
-${SUDO} apt install php8.1-sqlite3
+${SUDO} apt install php8.3-ctype
+${SUDO} apt install php8.3-curl
+${SUDO} apt install php8.3-dom
+${SUDO} apt install php8.3-fileinfo
+${SUDO} apt install php8.3-mbstring
+${SUDO} apt install php8.3-pdo
+${SUDO} apt install php8.3-tokenizer
+${SUDO} apt install php8.3-xml
+${SUDO} apt install php8.3-zip
+${SUDO} apt install php8.3-sqlite3
 ${SUDO} apt install composer
