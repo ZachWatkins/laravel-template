@@ -54,8 +54,8 @@ test('store saves and redirects', function (): void {
     $billing_zip_code = fake()->word();
     $billing_card_name = fake()->word();
     $billing_card_number = fake()->word();
-    $billing_card_expiration = fake()->word();
-    $billing_card_cvv = fake()->word();
+    $billing_card_expiration = substr(fake()->word(), 0, 5);
+    $billing_card_cvv = substr(fake()->word(), 0, 3);
     $user = User::factory()->create();
 
     $response = post(route('customers.store'), [
@@ -77,6 +77,7 @@ test('store saves and redirects', function (): void {
         'billing_card_cvv' => $billing_card_cvv,
         'user_id' => $user->id,
     ]);
+    $response->assertSessionHasNoErrors();
 
     $customers = Customer::query()
         ->where('phone', $phone)
@@ -150,8 +151,8 @@ test('update redirects', function (): void {
     $billing_zip_code = fake()->word();
     $billing_card_name = fake()->word();
     $billing_card_number = fake()->word();
-    $billing_card_expiration = fake()->word();
-    $billing_card_cvv = fake()->word();
+    $billing_card_expiration = substr(fake()->word(), 0, 5);
+    $billing_card_cvv = substr(fake()->word(), 0, 3);
     $user = User::factory()->create();
 
     $response = put(route('customers.update', $customer), [
@@ -173,6 +174,7 @@ test('update redirects', function (): void {
         'billing_card_cvv' => $billing_card_cvv,
         'user_id' => $user->id,
     ]);
+    $response->assertSessionHasNoErrors();
 
     $customer->refresh();
 
