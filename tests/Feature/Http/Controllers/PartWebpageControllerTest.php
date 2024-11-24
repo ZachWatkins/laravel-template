@@ -129,6 +129,7 @@ test('update redirects', function (): void {
         'content' => $content,
         'part_id' => $part->id,
     ]);
+    $response->assertSessionHasNoErrors();
 
     $partWebpage->refresh();
 
