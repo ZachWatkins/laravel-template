@@ -29,7 +29,7 @@ class MonitorSubscriberController extends Controller
 
         $request->session()->flash('monitorSubscriber.id', $monitorSubscriber->id);
 
-        return redirect()->route('monitorSubscribers.index');
+        return redirect()->route('monitor-subscribers.index');
     }
 
     public function show(Request $request, MonitorSubscriber $monitorSubscriber): View
@@ -48,13 +48,13 @@ class MonitorSubscriberController extends Controller
 
         $request->session()->flash('monitorSubscriber.id', $monitorSubscriber->id);
 
-        return redirect()->route('monitorSubscribers.index');
+        return redirect()->route('monitor-subscribers.index');
     }
 
     public function destroy(Request $request, MonitorSubscriber $monitorSubscriber): RedirectResponse
     {
         $monitorSubscriber->delete();
 
-        return redirect()->route('monitorSubscribers.index');
+        return redirect()->route('monitor-subscribers.index');
     }
 }
