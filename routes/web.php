@@ -33,7 +33,7 @@ Route::resource('part-webpages', App\Http\Controllers\PartWebpageController::cla
 
 Route::resource('customers', App\Http\Controllers\CustomerController::class);
 
-Route::get('shopping-carts/order', [App\Http\Controllers\ShoppingCartController::class, 'order']);
+Route::get('shopping-carts/order', [App\Http\Controllers\ShoppingCartController::class, 'order'])->name('shopping-carts.order');
 
 Route::resource('orders', App\Http\Controllers\OrderController::class)->only('index', 'show');
 

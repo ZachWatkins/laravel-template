@@ -23,9 +23,6 @@ class Order extends Model
         'total',
         'notes',
         'customer_id',
-        'customer_payment_method_id',
-        'customer_shipping_address_id',
-        'customer_billing_address_id',
     ];
 
     /**
@@ -37,29 +34,11 @@ class Order extends Model
         'id' => 'integer',
         'total' => 'decimal:2',
         'customer_id' => 'integer',
-        'customer_payment_method_id' => 'integer',
-        'customer_shipping_address_id' => 'integer',
-        'customer_billing_address_id' => 'integer',
     ];
 
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
-    }
-
-    public function customerPaymentMethod(): BelongsTo
-    {
-        return $this->belongsTo(CustomerPaymentMethod::class);
-    }
-
-    public function customerShippingAddress(): BelongsTo
-    {
-        return $this->belongsTo(CustomerShippingAddress::class);
-    }
-
-    public function customerBillingAddress(): BelongsTo
-    {
-        return $this->belongsTo(CustomerBillingAddress::class);
     }
 
     public function shoppingCart(): HasOne

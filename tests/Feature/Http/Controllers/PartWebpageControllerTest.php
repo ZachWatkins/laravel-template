@@ -11,6 +11,8 @@ use function Pest\Laravel\get;
 use function Pest\Laravel\post;
 use function Pest\Laravel\put;
 
+uses(\JMac\Testing\Traits\AdditionalAssertions::class);
+
 test('index displays view', function (): void {
     $partWebpages = PartWebpage::factory()->count(3)->create();
 
@@ -38,7 +40,7 @@ test('store uses form request validation')
     );
 
 test('store saves and redirects', function (): void {
-    $status = fake()->randomElement(/** enum_attributes **/);
+    $status = fake()->randomElement(['active', 'inactive']);
     $path = fake()->word();
     $title = fake()->sentence(4);
     $meta_title = fake()->word();
@@ -57,6 +59,7 @@ test('store saves and redirects', function (): void {
         'content' => $content,
         'part_id' => $part->id,
     ]);
+    $response->assertSessionHasNoErrors();
 
     $partWebpages = PartWebpage::query()
         ->where('status', $status)
@@ -71,7 +74,7 @@ test('store saves and redirects', function (): void {
     expect($partWebpages)->toHaveCount(1);
     $partWebpage = $partWebpages->first();
 
-    $response->assertRedirect(route('partWebpages.index'));
+    $response->assertRedirect(route('part-webpages.index'));
     $response->assertSessionHas('partWebpage.id', $partWebpage->id);
 });
 
@@ -107,7 +110,7 @@ test('update uses form request validation')
 
 test('update redirects', function (): void {
     $partWebpage = PartWebpage::factory()->create();
-    $status = fake()->randomElement(/** enum_attributes **/);
+    $status = fake()->randomElement(['active', 'inactive']);
     $path = fake()->word();
     $title = fake()->sentence(4);
     $meta_title = fake()->word();
@@ -126,10 +129,11 @@ test('update redirects', function (): void {
         'content' => $content,
         'part_id' => $part->id,
     ]);
+    $response->assertSessionHasNoErrors();
 
     $partWebpage->refresh();
 
-    $response->assertRedirect(route('partWebpages.index'));
+    $response->assertRedirect(route('part-webpages.index'));
     $response->assertSessionHas('partWebpage.id', $partWebpage->id);
 
     expect($status)->toEqual($partWebpage->status);
@@ -148,7 +152,7 @@ test('destroy deletes and redirects', function (): void {
 
     $response = delete(route('part-webpages.destroy', $partWebpage));
 
-    $response->assertRedirect(route('partWebpages.index'));
+    $response->assertRedirect(route('part-webpages.index'));
 
     assertModelMissing($partWebpage);
 });

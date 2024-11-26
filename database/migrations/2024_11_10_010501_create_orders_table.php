@@ -18,9 +18,6 @@ return new class extends Migration
             $table->decimal('total', 10, 2);
             $table->text('notes');
             $table->foreignId('customer_id');
-            $table->foreignId('customer_payment_method_id');
-            $table->foreignId('customer_shipping_address_id');
-            $table->foreignId('customer_billing_address_id');
             $table->unique(['customer_id', 'number']);
             $table->timestamps();
         });

@@ -11,50 +11,50 @@ use Illuminate\View\View;
 
 class MonitorSubscriberController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request): View
     {
         $monitorSubscribers = MonitorSubscriber::all();
 
         return view('monitorSubscriber.index', compact('monitorSubscribers'));
     }
 
-    public function create(Request $request): Response
+    public function create(Request $request): View
     {
         return view('monitorSubscriber.create');
     }
 
-    public function store(MonitorSubscriberStoreRequest $request): Response
+    public function store(MonitorSubscriberStoreRequest $request): RedirectResponse
     {
         $monitorSubscriber = MonitorSubscriber::create($request->validated());
 
         $request->session()->flash('monitorSubscriber.id', $monitorSubscriber->id);
 
-        return redirect()->route('monitorSubscribers.index');
+        return redirect()->route('monitor-subscribers.index');
     }
 
-    public function show(Request $request, MonitorSubscriber $monitorSubscriber): Response
+    public function show(Request $request, MonitorSubscriber $monitorSubscriber): View
     {
         return view('monitorSubscriber.show', compact('monitorSubscriber'));
     }
 
-    public function edit(Request $request, MonitorSubscriber $monitorSubscriber): Response
+    public function edit(Request $request, MonitorSubscriber $monitorSubscriber): View
     {
         return view('monitorSubscriber.edit', compact('monitorSubscriber'));
     }
 
-    public function update(MonitorSubscriberUpdateRequest $request, MonitorSubscriber $monitorSubscriber): Response
+    public function update(MonitorSubscriberUpdateRequest $request, MonitorSubscriber $monitorSubscriber): RedirectResponse
     {
         $monitorSubscriber->update($request->validated());
 
         $request->session()->flash('monitorSubscriber.id', $monitorSubscriber->id);
 
-        return redirect()->route('monitorSubscribers.index');
+        return redirect()->route('monitor-subscribers.index');
     }
 
-    public function destroy(Request $request, MonitorSubscriber $monitorSubscriber): Response
+    public function destroy(Request $request, MonitorSubscriber $monitorSubscriber): RedirectResponse
     {
         $monitorSubscriber->delete();
 
-        return redirect()->route('monitorSubscribers.index');
+        return redirect()->route('monitor-subscribers.index');
     }
 }

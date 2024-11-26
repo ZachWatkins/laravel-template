@@ -11,50 +11,50 @@ use Illuminate\View\View;
 
 class PartWebpageController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request): View
     {
         $partWebpages = PartWebpage::all();
 
         return view('partWebpage.index', compact('partWebpages'));
     }
 
-    public function create(Request $request): Response
+    public function create(Request $request): View
     {
         return view('partWebpage.create');
     }
 
-    public function store(PartWebpageStoreRequest $request): Response
+    public function store(PartWebpageStoreRequest $request): RedirectResponse
     {
         $partWebpage = PartWebpage::create($request->validated());
 
         $request->session()->flash('partWebpage.id', $partWebpage->id);
 
-        return redirect()->route('partWebpages.index');
+        return redirect()->route('part-webpages.index');
     }
 
-    public function show(Request $request, PartWebpage $partWebpage): Response
+    public function show(Request $request, PartWebpage $partWebpage): View
     {
         return view('partWebpage.show', compact('partWebpage'));
     }
 
-    public function edit(Request $request, PartWebpage $partWebpage): Response
+    public function edit(Request $request, PartWebpage $partWebpage): View
     {
         return view('partWebpage.edit', compact('partWebpage'));
     }
 
-    public function update(PartWebpageUpdateRequest $request, PartWebpage $partWebpage): Response
+    public function update(PartWebpageUpdateRequest $request, PartWebpage $partWebpage): RedirectResponse
     {
         $partWebpage->update($request->validated());
 
         $request->session()->flash('partWebpage.id', $partWebpage->id);
 
-        return redirect()->route('partWebpages.index');
+        return redirect()->route('part-webpages.index');
     }
 
-    public function destroy(Request $request, PartWebpage $partWebpage): Response
+    public function destroy(Request $request, PartWebpage $partWebpage): RedirectResponse
     {
         $partWebpage->delete();
 
-        return redirect()->route('partWebpages.index');
+        return redirect()->route('part-webpages.index');
     }
 }
