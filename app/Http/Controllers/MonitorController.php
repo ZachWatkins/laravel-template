@@ -11,19 +11,19 @@ use Illuminate\View\View;
 
 class MonitorController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request): View
     {
         $monitors = Monitor::all();
 
         return view('monitor.index', compact('monitors'));
     }
 
-    public function create(Request $request): Response
+    public function create(Request $request): View
     {
         return view('monitor.create');
     }
 
-    public function store(MonitorStoreRequest $request): Response
+    public function store(MonitorStoreRequest $request): RedirectResponse
     {
         $monitor = Monitor::create($request->validated());
 
@@ -32,17 +32,17 @@ class MonitorController extends Controller
         return redirect()->route('monitors.index');
     }
 
-    public function show(Request $request, Monitor $monitor): Response
+    public function show(Request $request, Monitor $monitor): View
     {
         return view('monitor.show', compact('monitor'));
     }
 
-    public function edit(Request $request, Monitor $monitor): Response
+    public function edit(Request $request, Monitor $monitor): View
     {
         return view('monitor.edit', compact('monitor'));
     }
 
-    public function update(MonitorUpdateRequest $request, Monitor $monitor): Response
+    public function update(MonitorUpdateRequest $request, Monitor $monitor): RedirectResponse
     {
         $monitor->update($request->validated());
 
@@ -51,7 +51,7 @@ class MonitorController extends Controller
         return redirect()->route('monitors.index');
     }
 
-    public function destroy(Request $request, Monitor $monitor): Response
+    public function destroy(Request $request, Monitor $monitor): RedirectResponse
     {
         $monitor->delete();
 

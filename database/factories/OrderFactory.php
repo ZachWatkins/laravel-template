@@ -5,9 +5,6 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 use App\Models\Customer;
-use App\Models\CustomerBillingAddress;
-use App\Models\CustomerPaymentMethod;
-use App\Models\CustomerShippingAddress;
 use App\Models\Order;
 
 class OrderFactory extends Factory
@@ -30,9 +27,6 @@ class OrderFactory extends Factory
             'total' => $this->faker->randomFloat(2, 0, 99999999.99),
             'notes' => $this->faker->text(),
             'customer_id' => Customer::factory(),
-            'customer_payment_method_id' => CustomerPaymentMethod::factory(),
-            'customer_shipping_address_id' => CustomerShippingAddress::factory(),
-            'customer_billing_address_id' => CustomerBillingAddress::factory(),
         ];
     }
 }

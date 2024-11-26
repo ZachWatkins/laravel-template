@@ -11,6 +11,8 @@ use function Pest\Laravel\get;
 use function Pest\Laravel\post;
 use function Pest\Laravel\put;
 
+uses(\JMac\Testing\Traits\AdditionalAssertions::class);
+
 test('index displays view', function (): void {
     $monitorSubscribers = MonitorSubscriber::factory()->count(3)->create();
 
@@ -56,7 +58,7 @@ test('store saves and redirects', function (): void {
     expect($monitorSubscribers)->toHaveCount(1);
     $monitorSubscriber = $monitorSubscribers->first();
 
-    $response->assertRedirect(route('monitorSubscribers.index'));
+    $response->assertRedirect(route('monitor-subscribers.index'));
     $response->assertSessionHas('monitorSubscriber.id', $monitorSubscriber->id);
 });
 
@@ -104,7 +106,7 @@ test('update redirects', function (): void {
 
     $monitorSubscriber->refresh();
 
-    $response->assertRedirect(route('monitorSubscribers.index'));
+    $response->assertRedirect(route('monitor-subscribers.index'));
     $response->assertSessionHas('monitorSubscriber.id', $monitorSubscriber->id);
 
     expect($name)->toEqual($monitorSubscriber->name);
@@ -118,7 +120,7 @@ test('destroy deletes and redirects', function (): void {
 
     $response = delete(route('monitor-subscribers.destroy', $monitorSubscriber));
 
-    $response->assertRedirect(route('monitorSubscribers.index'));
+    $response->assertRedirect(route('monitor-subscribers.index'));
 
     assertModelMissing($monitorSubscriber);
 });

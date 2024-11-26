@@ -10,6 +10,8 @@ use function Pest\Laravel\get;
 use function Pest\Laravel\post;
 use function Pest\Laravel\put;
 
+uses(\JMac\Testing\Traits\AdditionalAssertions::class);
+
 test('index displays view', function (): void {
     $monitors = Monitor::factory()->count(3)->create();
 
