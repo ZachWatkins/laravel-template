@@ -137,43 +137,27 @@ test('update uses form request validation')
 
 test('update redirects', function (): void {
     $customer = Customer::factory()->create();
-    $phone = fake()->phoneNumber();
-    $shipping_street_1 = fake()->word();
-    $shipping_street_2 = fake()->word();
-    $shipping_city = fake()->word();
-    $shipping_state = fake()->word();
-    $shipping_zip_code = fake()->word();
-    $shipping_instructions = fake()->word();
-    $billing_street_1 = fake()->word();
-    $billing_street_2 = fake()->word();
-    $billing_city = fake()->word();
-    $billing_state = fake()->word();
-    $billing_zip_code = fake()->word();
-    $billing_card_name = fake()->word();
-    $billing_card_number = fake()->word();
-    $billing_card_expiration = substr(fake()->word(), 0, 5);
-    $billing_card_cvv = substr(fake()->word(), 0, 3);
+    $differentCustomerValues = Customer::factory()->make()->only([
+        'phone',
+        'shipping_street_1',
+        'shipping_street_2',
+        'shipping_city',
+        'shipping_state',
+        'shipping_zip_code',
+        'shipping_instructions',
+        'billing_street_1',
+        'billing_street_2',
+        'billing_city',
+        'billing_state',
+        'billing_zip_code',
+        'billing_card_name',
+        'billing_card_number',
+        'billing_card_expiration',
+        'billing_card_cvv',
+    ]);
     $user = User::factory()->create();
 
-    $response = put(route('customers.update', $customer), [
-        'phone' => $phone,
-        'shipping_street_1' => $shipping_street_1,
-        'shipping_street_2' => $shipping_street_2,
-        'shipping_city' => $shipping_city,
-        'shipping_state' => $shipping_state,
-        'shipping_zip_code' => $shipping_zip_code,
-        'shipping_instructions' => $shipping_instructions,
-        'billing_street_1' => $billing_street_1,
-        'billing_street_2' => $billing_street_2,
-        'billing_city' => $billing_city,
-        'billing_state' => $billing_state,
-        'billing_zip_code' => $billing_zip_code,
-        'billing_card_name' => $billing_card_name,
-        'billing_card_number' => $billing_card_number,
-        'billing_card_expiration' => $billing_card_expiration,
-        'billing_card_cvv' => $billing_card_cvv,
-        'user_id' => $user->id,
-    ]);
+    $response = put(route('customers.update', $customer), $differentCustomerValues + ['user_id' => $user->id]);
     $response->assertSessionHasNoErrors();
 
     $customer->refresh();
@@ -181,22 +165,22 @@ test('update redirects', function (): void {
     $response->assertRedirect(route('customers.index'));
     $response->assertSessionHas('customer.id', $customer->id);
 
-    expect($phone)->toEqual($customer->phone);
-    expect($shipping_street_1)->toEqual($customer->shipping_street_1);
-    expect($shipping_street_2)->toEqual($customer->shipping_street_2);
-    expect($shipping_city)->toEqual($customer->shipping_city);
-    expect($shipping_state)->toEqual($customer->shipping_state);
-    expect($shipping_zip_code)->toEqual($customer->shipping_zip_code);
-    expect($shipping_instructions)->toEqual($customer->shipping_instructions);
-    expect($billing_street_1)->toEqual($customer->billing_street_1);
-    expect($billing_street_2)->toEqual($customer->billing_street_2);
-    expect($billing_city)->toEqual($customer->billing_city);
-    expect($billing_state)->toEqual($customer->billing_state);
-    expect($billing_zip_code)->toEqual($customer->billing_zip_code);
-    expect($billing_card_name)->toEqual($customer->billing_card_name);
-    expect($billing_card_number)->toEqual($customer->billing_card_number);
-    expect($billing_card_expiration)->toEqual($customer->billing_card_expiration);
-    expect($billing_card_cvv)->toEqual($customer->billing_card_cvv);
+    expect($differentCustomerValues['phone'])->toEqual($customer->phone);
+    expect($differentCustomerValues['shipping_street_1'])->toEqual($customer->shipping_street_1);
+    expect($differentCustomerValues['shipping_street_2'])->toEqual($customer->shipping_street_2);
+    expect($differentCustomerValues['shipping_city'])->toEqual($customer->shipping_city);
+    expect($differentCustomerValues['shipping_state'])->toEqual($customer->shipping_state);
+    expect($differentCustomerValues['shipping_zip_code'])->toEqual($customer->shipping_zip_code);
+    expect($differentCustomerValues['shipping_instructions'])->toEqual($customer->shipping_instructions);
+    expect($differentCustomerValues['billing_street_1'])->toEqual($customer->billing_street_1);
+    expect($differentCustomerValues['billing_street_2'])->toEqual($customer->billing_street_2);
+    expect($differentCustomerValues['billing_city'])->toEqual($customer->billing_city);
+    expect($differentCustomerValues['billing_state'])->toEqual($customer->billing_state);
+    expect($differentCustomerValues['billing_zip_code'])->toEqual($customer->billing_zip_code);
+    expect($differentCustomerValues['billing_card_name'])->toEqual($customer->billing_card_name);
+    expect($differentCustomerValues['billing_card_number'])->toEqual($customer->billing_card_number);
+    expect($differentCustomerValues['billing_card_expiration'])->toEqual($customer->billing_card_expiration);
+    expect($differentCustomerValues['billing_card_cvv'])->toEqual($customer->billing_card_cvv);
     expect($user->id)->toEqual($customer->user_id);
 });
 
