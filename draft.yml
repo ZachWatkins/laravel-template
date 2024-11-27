@@ -209,21 +209,6 @@ controllers:
     resource
   MonitorSubscriber:
     resource
-  ShoppingCart:
-    addItem:
-      validate: part_id, quantity
-      sync: orderItems:part_id,quantity
-      flash: quantity
-    removeItem:
-      validate: part_id, quantity
-      sync: orderItems:part_id,quantity
-      flash: quantity
-    empty:
-      sync: orderItems
-      flash: empty
-    order:
-      find: customer_id
-      redirect: orders.show with:order
   Order:
     resource: index, store, show
 
