@@ -168,7 +168,7 @@ models:
     active: boolean default:true
     threshold: integer default:10
     relationships:
-      hasMany: Part, MonitorSubscriber
+      hasMany: Part, PartInventoryMonitorSubscriber
   PartInventoryMonitorSubscriber:
     name: string:100
     email: string:100
