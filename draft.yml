@@ -183,24 +183,20 @@ models:
     relationships:
       belongsTo: PartInventoryMonitor
   Currency:
-    id: false
-    code: string:3 primary
+    code: string:3 unique
     name: string:100
     symbol: string:10
     relationships:
       hasMany: Order
   Locale:
-    id: false
-    code: string:12 primary
+    code: string:12 unique
     name: string:100
   Country:
-    id: false
-    code: string:2 primary
+    code: string:2 unique
     name: string:100
     enabled: boolean default:true
   Province:
-    id: false
-    code: string:255 primary
+    code: string:255 unique
     name: string:255
     abbreviation: string:255 nullable
     relationships:
