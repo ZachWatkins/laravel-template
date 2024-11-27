@@ -205,10 +205,6 @@ controllers:
     resource
   CustomerPaymentMethod:
     resource
-  Monitor:
-    resource
-  MonitorSubscriber:
-    resource
   Order:
     resource: index, store, show
 
