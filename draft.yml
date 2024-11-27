@@ -206,7 +206,7 @@ models:
 
 controllers:
   Part:
-    resource: paginate:parts
+    resource
   PartWebpage:
     resource
   Customer:
