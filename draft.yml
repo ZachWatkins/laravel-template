@@ -69,7 +69,7 @@ models:
     created_by_guest: boolean default:false
     notes: text
     relationships:
-      belongsTo: Customer, ShippingAddress, BillingAddress, Currency, Locale
+      belongsTo: Customer, Currency, Locale
       hasMany: OrderItem
       hasOne: ShippingAddress, BillingAddress, OrderPayment
     indexes:
@@ -183,19 +183,23 @@ models:
     relationships:
       belongsTo: PartInventoryMonitor
   Currency:
-    code: string:3
+    id: false
+    code: string:3 primary
     name: string:100
     symbol: string:10
     relationships:
       hasMany: Order
   Locale:
+    id: false
     code: string:12 primary
     name: string:100
   Country:
+    id: false
     code: string:2 primary
     name: string:100
     enabled: boolean default:true
   Province:
+    id: false
     code: string:255 primary
     name: string:255
     abbreviation: string:255 nullable
