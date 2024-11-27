@@ -53,11 +53,10 @@ models:
     relationships:
       belongsTo: Part
   ShoppingCart:
+    customer_id: foreign unique
     relationships:
       belongsTo: Customer
       belongsToMany: Part
-    indexes:
-      - unique: customer_id
   Order:
     number: integer default:1 index
     payment_state: enum:pending,paid,partially_refunded,refunded default:pending
