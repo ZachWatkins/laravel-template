@@ -22,8 +22,7 @@ class ManufacturerFactory extends Factory
     {
         return [
             'name' => $this->faker->name(),
-            'website' => $this->faker->regexify('[A-Za-z0-9]{100}'),
-            'phone' => $this->faker->phoneNumber(),
+            'description' => $this->faker->text(),
             'filename' => $this->faker->regexify('[A-Za-z0-9]{100}'),
         ];
     }

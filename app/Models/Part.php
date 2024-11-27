@@ -23,8 +23,9 @@ class Part extends Model
         'number',
         'name',
         'sku',
+        'enabled',
         'inventory',
-        'price',
+        'unit_price',
         'weight',
         'weight_unit',
         'filename',
@@ -40,8 +41,7 @@ class Part extends Model
      */
     protected $casts = [
         'id' => 'integer',
-        'price' => 'decimal:2',
-        'weight' => 'decimal:2',
+        'enabled' => 'boolean',
         'published_at' => 'timestamp',
         'part_type_id' => 'integer',
         'manufacturer_id' => 'integer',
@@ -67,13 +67,13 @@ class Part extends Model
         return $this->hasMany(OrderItem::class);
     }
 
-    public function partPhotos(): HasMany
+    public function partInventoryMonitors(): HasMany
     {
-        return $this->hasMany(PartPhoto::class);
+        return $this->hasMany(PartInventoryMonitor::class);
     }
 
-    public function monitors(): HasMany
+    public function partImages(): HasMany
     {
-        return $this->hasMany(Monitor::class);
+        return $this->hasMany(PartImage::class);
     }
 }

@@ -4,7 +4,9 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
+use App\Models\BillingAddress;
 use App\Models\Customer;
+use App\Models\ShippingAddress;
 use App\Models\User;
 
 class CustomerFactory extends Factory
@@ -22,23 +24,12 @@ class CustomerFactory extends Factory
     public function definition(): array
     {
         return [
-            'phone' => $this->faker->phoneNumber(),
-            'shipping_street_1' => $this->faker->regexify('[A-Za-z0-9]{100}'),
-            'shipping_street_2' => $this->faker->regexify('[A-Za-z0-9]{100}'),
-            'shipping_city' => $this->faker->regexify('[A-Za-z0-9]{100}'),
-            'shipping_state' => $this->faker->regexify('[A-Za-z0-9]{100}'),
-            'shipping_zip_code' => '55555-5555',
-            'shipping_instructions' => 'Leave it on the porch please. Thanks!',
-            'billing_street_1' => $this->faker->regexify('[A-Za-z0-9]{100}'),
-            'billing_street_2' => $this->faker->regexify('[A-Za-z0-9]{100}'),
-            'billing_city' => $this->faker->regexify('[A-Za-z0-9]{100}'),
-            'billing_state' => $this->faker->regexify('[A-Za-z0-9]{100}'),
-            'billing_zip_code' => '55555-5555',
-            'billing_card_name' => $this->faker->regexify('[A-Za-z0-9]{100}'),
-            'billing_card_number' => $this->faker->regexify('[A-Za-z0-9]{20}'),
-            'billing_card_expiration' => $this->faker->regexify('[A-Za-z0-9]{5}'),
-            'billing_card_cvv' => $this->faker->regexify('[A-Za-z0-9]{3}'),
+            'birthday' => $this->faker->date(),
+            'phone_number' => $this->faker->phoneNumber(),
+            'subscribed_to_newsletter' => $this->faker->boolean(),
             'user_id' => User::factory(),
+            'shipping_address_id' => ShippingAddress::factory(),
+            'billing_address_id' => BillingAddress::factory(),
         ];
     }
 }

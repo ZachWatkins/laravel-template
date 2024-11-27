@@ -18,8 +18,7 @@ class Manufacturer extends Model
      */
     protected $fillable = [
         'name',
-        'website',
-        'phone',
+        'description',
         'filename',
     ];
 

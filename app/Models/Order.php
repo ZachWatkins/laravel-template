@@ -19,10 +19,17 @@ class Order extends Model
      */
     protected $fillable = [
         'number',
-        'status',
+        'payment_state',
+        'shipping_state',
+        'items_total',
         'total',
+        'token_value',
+        'customer_ip',
+        'created_by_guest',
         'notes',
         'customer_id',
+        'currency_id',
+        'locale_id',
     ];
 
     /**
@@ -33,7 +40,10 @@ class Order extends Model
     protected $casts = [
         'id' => 'integer',
         'total' => 'decimal:2',
+        'created_by_guest' => 'boolean',
         'customer_id' => 'integer',
+        'currency_id' => 'integer',
+        'locale_id' => 'integer',
     ];
 
     public function customer(): BelongsTo
@@ -41,13 +51,33 @@ class Order extends Model
         return $this->belongsTo(Customer::class);
     }
 
-    public function shoppingCart(): HasOne
+    public function currency(): BelongsTo
     {
-        return $this->hasOne(ShoppingCart::class);
+        return $this->belongsTo(Currency::class);
+    }
+
+    public function locale(): BelongsTo
+    {
+        return $this->belongsTo(Locale::class);
     }
 
     public function orderItems(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function shippingAddress(): HasOne
+    {
+        return $this->hasOne(ShippingAddress::class);
+    }
+
+    public function billingAddress(): HasOne
+    {
+        return $this->hasOne(BillingAddress::class);
+    }
+
+    public function orderPayment(): HasOne
+    {
+        return $this->hasOne(OrderPayment::class);
     }
 }
