@@ -66,8 +66,6 @@ models:
       belongsTo: Customer, Currency, Locale
       hasMany: OrderItem
       hasOne: ShippingAddress, BillingAddress, OrderPayment
-    indexes:
-      - unique: customer_id, number
   OrderItem:
     quantity: integer
     unit_price: integer # Assume last 2 digits are cents.
