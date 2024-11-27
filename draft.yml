@@ -223,14 +223,16 @@ controllers:
     resource
   ShoppingCart:
     addItem:
-      find: customer_id
-      redirect: shoppingCarts.show with:shoppingCart
+      validate: part_id, quantity
+      sync: orderItems:part_id,quantity
+      flash: quantity
     removeItem:
-      find: customer_id
-      redirect: shoppingCarts.show with:shoppingCart
+      validate: part_id, quantity
+      sync: orderItems:part_id,quantity
+      flash: quantity
     empty:
-      find: customer_id
-      redirect: shoppingCarts.show with:shoppingCart
+      sync: orderItems
+      flash: empty
     order:
       find: customer_id
       redirect: orders.show with:order
