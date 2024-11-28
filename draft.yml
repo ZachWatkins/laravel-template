@@ -195,6 +195,15 @@ models:
       belongsTo: Country
     indexes:
       - unique: country_code, name
+  ShoppingCart:
+    relationships:
+      belongsTo: Customer
+      hasMany: ShoppingCartItem
+  ShoppingCartItem:
+    quantity: integer
+    unit_price: integer # Assume last 2 digits are cents.
+    relationships:
+      belongsTo: ShoppingCart, Part
 
 controllers:
   Part:
@@ -204,6 +213,10 @@ controllers:
   Customer:
     resource
   CustomerPaymentMethod:
+    resource
+  ShoppingCartController:
+    resource
+  ShoppingCartItemController:
     resource
   Order:
     resource: index, store, show
