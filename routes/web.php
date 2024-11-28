@@ -41,3 +41,8 @@ Route::get('shopping-carts/empty', [App\Http\Controllers\ShoppingCartController:
 Route::get('shopping-carts/order', [App\Http\Controllers\ShoppingCartController::class, 'order']);
 
 Route::resource('orders', App\Http\Controllers\OrderController::class)->only('index', 'store', 'show');
+
+
+Route::resource('shopping-carts', App\Http\Controllers\ShoppingCartController::class);
+
+Route::resource('shopping-cart-items', App\Http\Controllers\ShoppingCartItemController::class);
