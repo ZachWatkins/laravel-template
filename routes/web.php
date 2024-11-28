@@ -35,13 +35,7 @@ Route::resource('customers', App\Http\Controllers\CustomerController::class);
 
 Route::resource('customer-payment-methods', App\Http\Controllers\CustomerPaymentMethodController::class);
 
-Route::get('shopping-carts/add-item', [App\Http\Controllers\ShoppingCartController::class, 'addItem']);
-Route::get('shopping-carts/remove-item', [App\Http\Controllers\ShoppingCartController::class, 'removeItem']);
-Route::get('shopping-carts/empty', [App\Http\Controllers\ShoppingCartController::class, 'empty']);
-Route::get('shopping-carts/order', [App\Http\Controllers\ShoppingCartController::class, 'order']);
-
 Route::resource('orders', App\Http\Controllers\OrderController::class)->only('index', 'store', 'show');
-
 
 Route::resource('shopping-carts', App\Http\Controllers\ShoppingCartController::class);
 
