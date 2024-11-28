@@ -18,23 +18,12 @@ class Customer extends Model
      * @var array
      */
     protected $fillable = [
-        'phone',
-        'shipping_street_1',
-        'shipping_street_2',
-        'shipping_city',
-        'shipping_state',
-        'shipping_zip_code',
-        'shipping_instructions',
-        'billing_street_1',
-        'billing_street_2',
-        'billing_city',
-        'billing_state',
-        'billing_zip_code',
-        'billing_card_name',
-        'billing_card_number',
-        'billing_card_expiration',
-        'billing_card_cvv',
+        'birthday',
+        'phone_number',
+        'subscribed_to_newsletter',
         'user_id',
+        'shipping_address_id',
+        'billing_address_id',
     ];
 
     /**
@@ -44,7 +33,11 @@ class Customer extends Model
      */
     protected $casts = [
         'id' => 'integer',
+        'birthday' => 'date',
+        'subscribed_to_newsletter' => 'boolean',
         'user_id' => 'integer',
+        'shipping_address_id' => 'integer',
+        'billing_address_id' => 'integer',
     ];
 
     public function user(): BelongsTo
@@ -52,9 +45,24 @@ class Customer extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function shippingAddress(): BelongsTo
+    {
+        return $this->belongsTo(ShippingAddress::class);
+    }
+
+    public function billingAddress(): BelongsTo
+    {
+        return $this->belongsTo(BillingAddress::class);
+    }
+
     public function shoppingCart(): HasOne
     {
-        return $this->hasOne(Order::class);
+        return $this->hasOne(ShoppingCart::class);
+    }
+
+    public function customerPaymentMethod(): HasOne
+    {
+        return $this->hasOne(CustomerPaymentMethod::class);
     }
 
     public function orders(): HasMany

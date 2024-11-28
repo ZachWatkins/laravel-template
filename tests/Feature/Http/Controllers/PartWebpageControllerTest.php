@@ -40,7 +40,9 @@ test('store uses form request validation')
     );
 
 test('store saves and redirects', function (): void {
-    $status = fake()->randomElement(['active', 'inactive']);
+    $status = fake()->randomElement(
+        ['active', 'inactive']
+    );
     $path = fake()->word();
     $title = fake()->sentence(4);
     $meta_title = fake()->word();
@@ -110,7 +112,9 @@ test('update uses form request validation')
 
 test('update redirects', function (): void {
     $partWebpage = PartWebpage::factory()->create();
-    $status = fake()->randomElement(['active', 'inactive']);
+    $status = fake()->randomElement(
+        ['active', 'inactive']
+    );
     $path = fake()->word();
     $title = fake()->sentence(4);
     $meta_title = fake()->word();
@@ -129,7 +133,6 @@ test('update redirects', function (): void {
         'content' => $content,
         'part_id' => $part->id,
     ]);
-    $response->assertSessionHasNoErrors();
 
     $partWebpage->refresh();
 

@@ -20,23 +20,12 @@ class CustomerUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phone' => ['required', 'string', 'max:20'],
-            'shipping_street_1' => ['required', 'string', 'max:100'],
-            'shipping_street_2' => ['required', 'string', 'max:100'],
-            'shipping_city' => ['required', 'string', 'max:100'],
-            'shipping_state' => ['required', 'string', 'max:100'],
-            'shipping_zip_code' => ['required', 'string', 'max:10'],
-            'shipping_instructions' => ['required', 'string', 'max:500'],
-            'billing_street_1' => ['required', 'string', 'max:100'],
-            'billing_street_2' => ['required', 'string', 'max:100'],
-            'billing_city' => ['required', 'string', 'max:100'],
-            'billing_state' => ['required', 'string', 'max:100'],
-            'billing_zip_code' => ['required', 'string', 'max:10'],
-            'billing_card_name' => ['required', 'string', 'max:100'],
-            'billing_card_number' => ['required', 'string', 'max:20'],
-            'billing_card_expiration' => ['required', 'string', 'max:5'],
-            'billing_card_cvv' => ['required', 'string', 'max:3'],
+            'birthday' => ['nullable', 'date'],
+            'phone_number' => ['nullable', 'string', 'max:20'],
+            'subscribed_to_newsletter' => ['required'],
             'user_id' => ['required', 'integer', 'exists:users,id'],
+            'shipping_address_id' => ['required', 'integer', 'exists:shipping_addresses,id'],
+            'billing_address_id' => ['required', 'integer', 'exists:billing_addresses,id'],
         ];
     }
 }

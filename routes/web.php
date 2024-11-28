@@ -27,16 +27,22 @@ Route::middleware('auth')->group(function () {
 require __DIR__.'/auth.php';
 
 
-
+Route::resource('parts', App\Http\Controllers\PartController::class);
 
 Route::resource('part-webpages', App\Http\Controllers\PartWebpageController::class);
 
 Route::resource('customers', App\Http\Controllers\CustomerController::class);
 
-Route::get('shopping-carts/order', [App\Http\Controllers\ShoppingCartController::class, 'order'])->name('shopping-carts.order');
+Route::resource('customer-payment-methods', App\Http\Controllers\CustomerPaymentMethodController::class);
 
-Route::resource('orders', App\Http\Controllers\OrderController::class)->only('index', 'show');
+Route::get('shopping-carts/add-item', [App\Http\Controllers\ShoppingCartController::class, 'addItem']);
+Route::get('shopping-carts/remove-item', [App\Http\Controllers\ShoppingCartController::class, 'removeItem']);
+Route::get('shopping-carts/empty', [App\Http\Controllers\ShoppingCartController::class, 'empty']);
+Route::get('shopping-carts/order', [App\Http\Controllers\ShoppingCartController::class, 'order']);
 
-Route::resource('monitors', App\Http\Controllers\MonitorController::class);
+Route::resource('orders', App\Http\Controllers\OrderController::class)->only('index', 'store', 'show');
 
-Route::resource('monitor-subscribers', App\Http\Controllers\MonitorSubscriberController::class);
+
+Route::resource('shopping-carts', App\Http\Controllers\ShoppingCartController::class);
+
+Route::resource('shopping-cart-items', App\Http\Controllers\ShoppingCartItemController::class);

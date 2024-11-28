@@ -35,8 +35,8 @@ class ShoppingCart extends Model
         return $this->belongsTo(Customer::class);
     }
 
-    public function orderItems(): HasMany
+    public function shoppingCartItems(): HasMany
     {
-        return $this->hasMany(OrderItem::class);
+        return $this->hasMany(ShoppingCartItem::class);
     }
 }

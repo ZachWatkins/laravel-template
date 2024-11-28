@@ -1,12 +1,29 @@
 models:
+  Warehouse:
+    name: string:100
+    description: string:400
+    address_line_1: string:255
+    address_line_2: string:255
+    city: string:100 nullable
+    state_province_region: string:100 nullable
+    postal_code: string:20 nullable
+    country_code: string:100 nullable
+    latitude: decimal:10,8 nullable
+    longitude: decimal:11,8 nullable
+    space_station: string:100 nullable
+    planet_or_moon: string:100 nullable
+    star_system: string:100 nullable
+    sector: string:100 nullable
+    quadrant: string:100 nullable
   Part:
     status: enum:active,inactive default:active index
     number: string:100 index
     name: string:100
     sku: string:100
+    enabled: boolean default:true
     inventory: integer
-    price: decimal:8,2
-    weight: decimal:8,2
+    unit_price: integer # Assume last 2 digits are cents.
+    weight: integer # Assume last 2 digits are decimals.
     weight_unit: string:10
     filename: string:100
     published_at: nullable timestamp
@@ -14,7 +31,12 @@ models:
     relationships:
       belongsTo: PartType, Manufacturer
       hasOne: PartWebpage
-      hasMany: OrderItem, PartPhoto, Monitor
+      hasMany: OrderItem, PartInventoryMonitor, PartImage
+  PartImage:
+    type: enum:thumbnail,main,additional default:additional
+    path: string:255
+    relationships:
+      belongsTo: Part
   PartType:
     name: string:100
     softDeletes
@@ -30,82 +52,173 @@ models:
     content: text
     relationships:
       belongsTo: Part
-  ShoppingCart:
-    relationships:
-      belongsTo: Customer
-      hasMany: OrderItem
   Order:
     number: integer default:1 index
-    status: enum:paid,processing,shipped,delivered,canceled,returned,partially_refunded,refunded,completed default:paid index
+    payment_state: enum:pending,paid,partially_refunded,refunded default:pending
+    shipping_state: enum:pending,shipped,delivered,returned default:pending
+    items_total: integer
     total: decimal:10,2
+    token_value: string:255 nullable
+    customer_ip: string:255 nullable
+    created_by_guest: boolean default:false
     notes: text
     relationships:
-      belongsTo: Customer
-      hasOne: ShoppingCart
+      belongsTo: Customer, Currency, Locale
       hasMany: OrderItem
-    indexes:
-      - unique: customer_id, number
+      hasOne: ShippingAddress, BillingAddress, OrderPayment
   OrderItem:
     quantity: integer
-    price: decimal:8,2
+    unit_price: integer # Assume last 2 digits are cents.
+    total: integer # Assume last 2 digits are cents.
+    part_name: string:255 nullable
     relationships:
       belongsTo: Order, Part
-  Customer:
-    phone: string:20
-    shipping_street_1: string:100
-    shipping_street_2: string:100
-    shipping_city: string:100
-    shipping_state: string:100
-    shipping_zip_code: string:10
-    shipping_instructions: string:500
-    billing_street_1: string:100
-    billing_street_2: string:100
-    billing_city: string:100
-    billing_state: string:100
-    billing_zip_code: string:10
-    billing_card_name: string:100
-    billing_card_number: string:20
-    billing_card_expiration: string:5
-    billing_card_cvv: string:3
+  OrderDestination:
+    address_line_1: string:255
+    address_line_2: string:255
+    city: string:100
+    state_province_region: string:100 nullable
+    postal_code: string:20 nullable
+    country_code: string:100 nullable
+    latitude: decimal:10,8 nullable
+    longitude: decimal:11,8 nullable
+    space_station: string:100 nullable
+    planet_or_moon: string:100 nullable
+    star_system: string:100 nullable
+    sector: string:100 nullable
+    quadrant: string:100 nullable
     relationships:
-      belongsTo: User
-      hasOne: Order:shopping_cart
+      belongsTo: OrderPayment
+  OrderPayment:
+    total: decimal:10,2
+    relationships:
+      belongsTo: Order
+  OrderPaymentCard:
+    name: string:100
+    number: string:20
+    expiration: string:5
+    relationships:
+      belongsTo: OrderPayment, BillingAddress:
+  BillingAddress:
+    first_name: string:255
+    last_name: string:255
+    phone_number: string:255 nullable
+    address_line_1: string:255
+    address_line_2: string:255 nullable
+    company: string:255 nullable
+    city: string:100 nullable
+    postal_code: string:20 nullable
+    country_code: string:100 nullable
+    province_code: string:255 nullable
+    province_name: string:255 nullable
+    state_province_region: string:100
+    latitude: decimal:10,8 nullable
+    longitude: decimal:11,8 nullable
+    space_station: string:100 nullable
+    planet_or_moon: string:100 nullable
+    star_system: string:100 nullable
+    sector: string:100 nullable
+    quadrant: string:100 nullable
+  ShippingAddress:
+    first_name: string:255
+    last_name: string:255
+    phone_number: string:255 nullable
+    street: string:255
+    company: string:255 nullable
+    city: string:100
+    postal_code: string:20
+    country_code: string:100 nullable
+    province_code: string:255 nullable
+    province_name: string:255 nullable
+    state_province_region: string:100
+    latitude: decimal:10,8 nullable
+    longitude: decimal:11,8 nullable
+    space_station: string:100 nullable
+    planet_or_moon: string:100 nullable
+    star_system: string:100 nullable
+    sector: string:100 nullable
+    quadrant: string:100 nullable
+  Customer:
+    birthday: date nullable
+    phone_number: string:20 nullable
+    subscribed_to_newsletter: boolean default:false
+    relationships:
+      belongsTo: User, ShippingAddress, BillingAddress
+      hasOne: ShoppingCart, CustomerPaymentMethod
       hasMany: Order
+  CustomerPaymentMethod:
+    card_name: string:100
+    card_number: string:20
+    card_expiration: string:5
+    street_1: string:100
+    street_2: string:100
+    city: string:100
+    state: string:100
+    zip_code: string:10
+    relationships:
+      belongsTo: Customer
   Manufacturer:
     name: string:100
-    website: string:100
-    phone: string:20
+    description: string:400
     filename: string:100
     softDeletes
     relationships:
       hasMany: Part
-  Monitor:
+  PartInventoryMonitor:
     active: boolean default:true
     threshold: integer default:10
     relationships:
-      hasMany: Part, MonitorSubscriber
-  MonitorSubscriber:
+      hasMany: Part, PartInventoryMonitorSubscriber
+  PartInventoryMonitorSubscriber:
     name: string:100
     email: string:100
     relationships:
-      belongsTo: Monitor
+      belongsTo: PartInventoryMonitor
+  Currency:
+    code: string:3 unique
+    name: string:100
+    symbol: string:10
+    relationships:
+      hasMany: Order
+  Locale:
+    code: string:12 unique
+    name: string:100
+  Country:
+    code: string:2 unique
+    name: string:100
+    enabled: boolean default:true
+  Province:
+    code: string:255 unique
+    name: string:255
+    abbreviation: string:255 nullable
+    relationships:
+      belongsTo: Country
+    indexes:
+      - unique: country_code, name
+  ShoppingCart:
+    relationships:
+      belongsTo: Customer
+      hasMany: ShoppingCartItem
+  ShoppingCartItem:
+    quantity: integer
+    unit_price: integer # Assume last 2 digits are cents.
+    relationships:
+      belongsTo: ShoppingCart, Part
 
 controllers:
   Part:
-    resource: paginate:parts
+    resource
   PartWebpage:
     resource
   Customer:
     resource
-  ShoppingCart:
-    resource: all
-    order:
-      find: shopping_cart.id
+  CustomerPaymentMethod:
+    resource
+  ShoppingCartController:
+    resource
+  ShoppingCartItemController:
+    resource
   Order:
-    resource: index, show
-  Monitor:
-    resource
-  MonitorSubscriber:
-    resource
+    resource: index, store, show
 
-seeders: PartType, City, State
+seeders: PartType, Manufacturer, Currency, Locale, Country, Province

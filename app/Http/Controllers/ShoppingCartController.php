@@ -2,33 +2,59 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Order;
+use App\Http\Requests\ShoppingCartStoreRequest;
+use App\Http\Requests\ShoppingCartUpdateRequest;
 use App\Models\ShoppingCart;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class ShoppingCartController extends Controller
 {
-    public function order(Request $request): RedirectResponse
+    public function index(Request $request): View
     {
-        $validated = $request->validate([
-            'id' => 'required|exists:shopping_carts,id',
-        ]);
+        $shoppingCarts = ShoppingCart::all();
 
-        $shoppingCart = ShoppingCart::find($validated['id']);
+        return view('shoppingCart.index', compact('shoppingCarts'));
+    }
 
-        if (!$shoppingCart->orderItems->count()) {
-            return redirect()->route('shopping-carts.show', ['shopping_cart' => $shoppingCart->id]);
-        }
+    public function create(Request $request): View
+    {
+        return view('shoppingCart.create');
+    }
 
-        $order = Order::create($shoppingCart->only([
-            'customer_id',
-            'total',
-            'number',
-        ]));
+    public function store(ShoppingCartStoreRequest $request): RedirectResponse
+    {
+        $shoppingCart = ShoppingCart::create($request->validated());
 
-        $order->orderItems()->sync($shoppingCart->orderItems);
+        $request->session()->flash('shoppingCart.id', $shoppingCart->id);
+
+        return redirect()->route('shopping-carts.index');
+    }
+
+    public function show(Request $request, ShoppingCart $shoppingCart): View
+    {
+        return view('shoppingCart.show', compact('shoppingCart'));
+    }
+
+    public function edit(Request $request, ShoppingCart $shoppingCart): View
+    {
+        return view('shoppingCart.edit', compact('shoppingCart'));
+    }
+
+    public function update(ShoppingCartUpdateRequest $request, ShoppingCart $shoppingCart): RedirectResponse
+    {
+        $shoppingCart->update($request->validated());
+
+        $request->session()->flash('shoppingCart.id', $shoppingCart->id);
+
+        return redirect()->route('shopping-carts.index');
+    }
+
+    public function destroy(Request $request, ShoppingCart $shoppingCart): RedirectResponse
+    {
         $shoppingCart->delete();
-        return redirect()->route('orders.show', ['order' => $order->id]);
+
+        return redirect()->route('shopping-carts.index');
     }
 }
