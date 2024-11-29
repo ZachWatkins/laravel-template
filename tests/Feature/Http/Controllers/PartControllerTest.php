@@ -48,11 +48,25 @@ test('store saves and redirects', function (): void {
     $name = fake()->name();
     $sku = fake()->word();
     $enabled = fake()->boolean();
-    $inventory = fake()->numberBetween(-10000, 10000);
-    $unit_price = fake()->numberBetween(-10000, 10000);
-    $weight = fake()->numberBetween(-10000, 10000);
-    $weight_unit = fake()->word();
-    $filename = fake()->word();
+    $inventory = fake()->numberBetween(0, 10000);
+    $unit_price = fake()->numberBetween(1, 1000000);
+    $weight = fake()->numberBetween(1, 10000);
+    $weight_unit = fake()->randomElement([
+        'kg',
+        'g',
+        'mg',
+        'lb',
+        'oz',
+        'st',
+        'ton',
+        'm',
+        'cm',
+        'mm',
+        'in',
+        'ft',
+        'yd',
+    ]);
+    $filename = fake()->word() . '.jpg';
     $part_type = PartType::factory()->create();
     $manufacturer = Manufacturer::factory()->create();
 
