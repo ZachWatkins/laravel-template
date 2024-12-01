@@ -47,7 +47,7 @@ test('store saves and redirects', function (): void {
     $street_2 = fake()->word();
     $city = fake()->city();
     $state = fake()->word();
-    $zip_code = fake()->word();
+    $zip_code = '55555';
     $customer = Customer::factory()->create();
 
     $response = post(route('customer-payment-methods.store'), [
@@ -120,7 +120,7 @@ test('update redirects', function (): void {
     $street_2 = fake()->word();
     $city = fake()->city();
     $state = fake()->word();
-    $zip_code = fake()->word();
+    $zip_code = '55555';
     $customer = Customer::factory()->create();
 
     $response = put(route('customer-payment-methods.update', $customerPaymentMethod), [
