@@ -1,0 +1,57 @@
+name: Dependabot Auto-Merge for Composer
+
+on:
+  pull_request:
+    branches:
+      - trunk
+    paths:
+      - "composer.lock"
+      - ".github/workflows/dependabot.yml"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: "dependabot-composer-${{ github.event_name }}-${{ github.event.pull_request.number }}"
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          lfs: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+
+      - name: Audit
+        run: composer audit
+
+      - name: Install dependencies
+        run: composer install --no-progress --no-suggest
+
+      - name: Test
+        run: php artisan test --parallel
+
+  merge:
+    needs: audit
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]'
+    steps:
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v1
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Enable auto-merge for Dependabot PRs
+        if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
+        run: gh pr merge --auto --merge "$PR_URL"
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
