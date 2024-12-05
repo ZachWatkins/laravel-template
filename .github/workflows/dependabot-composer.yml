@@ -29,14 +29,27 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: "package.json"
+          cache-dependency-path: "package-lock.json"
+          cache: npm
+
       - name: Audit
-        run: composer audit
+        run: |
+          npm audit --audit-level=high
+          composer audit
 
       - name: Install dependencies
-        run: composer create-project
+        run: |
+          npm install
+          composer create-project
 
       - name: Test
-        run: php artisan test --parallel
+        run: |
+          npm run build
+          php artisan test --parallel
 
   merge:
     needs: audit
