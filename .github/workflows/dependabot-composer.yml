@@ -6,7 +6,7 @@ on:
       - trunk
     paths:
       - "composer.lock"
-      - ".github/workflows/dependabot.yml"
+      - ".github/workflows/dependabot-composer.yml"
 
 permissions:
   contents: write
