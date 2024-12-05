@@ -33,7 +33,7 @@ jobs:
         run: composer audit
 
       - name: Install dependencies
-        run: composer install --no-progress --no-suggest
+        run: composer create-project
 
       - name: Test
         run: php artisan test --parallel
