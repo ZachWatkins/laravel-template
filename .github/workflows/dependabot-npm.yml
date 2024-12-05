@@ -6,7 +6,7 @@ on:
       - trunk
     paths:
       - "package-lock.json"
-      - ".github/workflows/dependabot.yml"
+      - ".github/workflows/dependabot-npm.yml"
 
 permissions:
   contents: write
