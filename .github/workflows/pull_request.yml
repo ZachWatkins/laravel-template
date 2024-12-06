@@ -8,6 +8,11 @@ on:
       - opened
       - reopened
       - synchronize
+    paths:
+      - "!composer.json"
+      - "!composer.lock"
+      - "!package.json"
+      - "!package-lock.json"
 
 jobs:
   test:
