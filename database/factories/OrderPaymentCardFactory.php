@@ -2,11 +2,10 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 use App\Models\BillingAddress;
 use App\Models\OrderPayment;
 use App\Models\OrderPaymentCard;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class OrderPaymentCardFactory extends Factory
 {

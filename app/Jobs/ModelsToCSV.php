@@ -4,12 +4,12 @@ namespace App\Jobs;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Database\Eloquent\Builder;
 
 class ModelsToCSV implements ShouldQueue
 {
@@ -20,17 +20,18 @@ class ModelsToCSV implements ShouldQueue
     /**
      * Export models from a database to a CSV file on a disk.
      *
-     * @param string $model The model to export.
-     * @param string $disk The disk to export to.
-     * @param string $destination The destination path to export to.
-     * @param array  $query {
-     *     The query to apply to the model (optional).
-     *     @type array        $select  The Select clause.
-     *     @type array        $where   The where clause.
-     *     @type string|array $orderBy The orderBy clause. Accepts a column
-     *                                 name or an array of arrays of column
-     *                                 names and directions ('asc', 'desc').
-     * }
+     * @param  string  $model  The model to export.
+     * @param  string  $disk  The disk to export to.
+     * @param  string  $destination  The destination path to export to.
+     * @param  array  $query  {
+     *                        The query to apply to the model (optional).
+     *
+     * @type array $select  The Select clause.
+     * @type array $where   The where clause.
+     * @type string|array $orderBy The orderBy clause. Accepts a column
+     *                    name or an array of arrays of column
+     *                    names and directions ('asc', 'desc').
+     *                    }
      */
     public function __construct(
         protected string $model,
@@ -46,7 +47,7 @@ class ModelsToCSV implements ShouldQueue
     {
         $disk_root = config("filesystems.disks.{$this->disk}.root");
         $csv_headers = $this->query['select']
-            ?? Schema::getColumnListing((new $this->model())->getTable());
+            ?? Schema::getColumnListing((new $this->model)->getTable());
 
         $disk = Storage::disk($this->disk);
         $disk->makeDirectory(dirname($this->destination));
@@ -71,7 +72,7 @@ class ModelsToCSV implements ShouldQueue
      */
     protected function query(): Builder
     {
-        $model = new $this->model();
+        $model = new $this->model;
         $params = $this->query;
 
         // Define the database query.

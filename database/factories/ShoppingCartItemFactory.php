@@ -2,11 +2,10 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 use App\Models\Part;
 use App\Models\ShoppingCart;
 use App\Models\ShoppingCartItem;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ShoppingCartItemFactory extends Factory
 {

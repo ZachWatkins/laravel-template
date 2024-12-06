@@ -2,10 +2,9 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 use App\Models\Part;
 use App\Models\PartWebpage;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PartWebpageFactory extends Factory
 {
@@ -22,7 +21,7 @@ class PartWebpageFactory extends Factory
     public function definition(): array
     {
         return [
-            'status' => $this->faker->randomElement(["active","inactive"]),
+            'status' => $this->faker->randomElement(['active', 'inactive']),
             'path' => $this->faker->regexify('[A-Za-z0-9]{100}'),
             'title' => $this->faker->sentence(4),
             'meta_title' => $this->faker->regexify('[A-Za-z0-9]{100}'),

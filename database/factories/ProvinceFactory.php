@@ -2,10 +2,9 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 use App\Models\Country;
 use App\Models\Province;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ProvinceFactory extends Factory
 {

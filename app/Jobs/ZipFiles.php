@@ -17,9 +17,9 @@ class ZipFiles implements ShouldQueue
     /**
      * Create a new instance.
      *
-     * @param array  $files       One or more file names or patterns to compress.
-     * @param string $destination Destination zip file path.
-     * @param bool   $delete      Whether to delete the uncompressed files. Default true.
+     * @param  array  $files  One or more file names or patterns to compress.
+     * @param  string  $destination  Destination zip file path.
+     * @param  bool  $delete  Whether to delete the uncompressed files. Default true.
      */
     public function __construct(
         private array $files,
@@ -33,10 +33,10 @@ class ZipFiles implements ShouldQueue
             Storage::createDirectory($this->destination);
         }
 
-        $zip = new ZipArchive();
+        $zip = new ZipArchive;
         $zip->open(
             Storage::path($this->destination),
-            ZipArchive::CREATE|ZipArchive::OVERWRITE
+            ZipArchive::CREATE | ZipArchive::OVERWRITE
         );
 
         foreach ($this->files as $file) {
@@ -48,7 +48,7 @@ class ZipFiles implements ShouldQueue
 
         $zip->close();
 
-        if (!$this->delete) {
+        if (! $this->delete) {
             return;
         }
 

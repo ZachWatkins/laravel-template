@@ -4,6 +4,7 @@ namespace Tests\Feature\Http\Controllers;
 
 use App\Models\Part;
 use App\Models\PartWebpage;
+
 use function Pest\Faker\fake;
 use function Pest\Laravel\assertModelMissing;
 use function Pest\Laravel\delete;
@@ -23,14 +24,12 @@ test('index displays view', function (): void {
     $response->assertViewHas('partWebpages');
 });
 
-
 test('create displays view', function (): void {
     $response = get(route('part-webpages.create'));
 
     $response->assertOk();
     $response->assertViewIs('partWebpage.create');
 });
-
 
 test('store uses form request validation')
     ->assertActionUsesFormRequest(
@@ -80,7 +79,6 @@ test('store saves and redirects', function (): void {
     $response->assertSessionHas('partWebpage.id', $partWebpage->id);
 });
 
-
 test('show displays view', function (): void {
     $partWebpage = PartWebpage::factory()->create();
 
@@ -91,7 +89,6 @@ test('show displays view', function (): void {
     $response->assertViewHas('partWebpage');
 });
 
-
 test('edit displays view', function (): void {
     $partWebpage = PartWebpage::factory()->create();
 
@@ -101,7 +98,6 @@ test('edit displays view', function (): void {
     $response->assertViewIs('partWebpage.edit');
     $response->assertViewHas('partWebpage');
 });
-
 
 test('update uses form request validation')
     ->assertActionUsesFormRequest(
@@ -148,7 +144,6 @@ test('update redirects', function (): void {
     expect($content)->toEqual($partWebpage->content);
     expect($part->id)->toEqual($partWebpage->part_id);
 });
-
 
 test('destroy deletes and redirects', function (): void {
     $partWebpage = PartWebpage::factory()->create();

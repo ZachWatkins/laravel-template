@@ -2,11 +2,10 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 use App\Models\Manufacturer;
 use App\Models\Part;
 use App\Models\PartType;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PartFactory extends Factory
 {
@@ -23,7 +22,7 @@ class PartFactory extends Factory
     public function definition(): array
     {
         return [
-            'status' => $this->faker->randomElement(["active","inactive"]),
+            'status' => $this->faker->randomElement(['active', 'inactive']),
             'number' => $this->faker->regexify('[A-Za-z0-9]{100}'),
             'name' => $this->faker->name(),
             'sku' => $this->faker->regexify('[A-Za-z0-9]{100}'),

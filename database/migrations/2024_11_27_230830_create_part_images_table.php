@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('part_images', function (Blueprint $table) {
             $table->id();
-            $table->enum('type', ["thumbnail","main","additional"])->default('additional');
+            $table->enum('type', ['thumbnail', 'main', 'additional'])->default('additional');
             $table->string('path', 255);
             $table->foreignId('part_id');
             $table->timestamps();

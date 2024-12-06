@@ -6,6 +6,7 @@ use App\Models\BillingAddress;
 use App\Models\Customer;
 use App\Models\ShippingAddress;
 use App\Models\User;
+
 use function Pest\Faker\fake;
 use function Pest\Laravel\assertModelMissing;
 use function Pest\Laravel\delete;
@@ -25,14 +26,12 @@ test('index displays view', function (): void {
     $response->assertViewHas('customers');
 });
 
-
 test('create displays view', function (): void {
     $response = get(route('customers.create'));
 
     $response->assertOk();
     $response->assertViewIs('customer.create');
 });
-
 
 test('store uses form request validation')
     ->assertActionUsesFormRequest(
@@ -67,7 +66,6 @@ test('store saves and redirects', function (): void {
     $response->assertSessionHas('customer.id', $customer->id);
 });
 
-
 test('show displays view', function (): void {
     $customer = Customer::factory()->create();
 
@@ -78,7 +76,6 @@ test('show displays view', function (): void {
     $response->assertViewHas('customer');
 });
 
-
 test('edit displays view', function (): void {
     $customer = Customer::factory()->create();
 
@@ -88,7 +85,6 @@ test('edit displays view', function (): void {
     $response->assertViewIs('customer.edit');
     $response->assertViewHas('customer');
 });
-
 
 test('update uses form request validation')
     ->assertActionUsesFormRequest(
@@ -121,7 +117,6 @@ test('update redirects', function (): void {
     expect($shipping_address->id)->toEqual($customer->shipping_address_id);
     expect($billing_address->id)->toEqual($customer->billing_address_id);
 });
-
 
 test('destroy deletes and redirects', function (): void {
     $customer = Customer::factory()->create();
