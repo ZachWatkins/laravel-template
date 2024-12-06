@@ -1,0 +1,177 @@
+name: Pull Request Checks for Dependency Updates
+
+on:
+  pull_request:
+    branches:
+      - trunk
+    types:
+      - opened
+      - reopened
+      - synchronize
+    paths:
+      - "composer.json"
+      - "composer.lock"
+      - "package.json"
+      - "package-lock.json"
+
+concurrency:
+  group: "pull-request-dependencies-${{ github.event_name }}-${{ github.event.pull_request.number }}"
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          lfs: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: "package.json"
+          cache-dependency-path: "package-lock.json"
+          cache: npm
+
+      - name: Audit
+        run: |
+          npm audit --audit-level=high
+          composer audit
+
+  comment-failed-audit:
+    needs: audit
+    runs-on: ubuntu-latest
+    if: ${{ needs.audit.result == 'failure' }}
+    steps:
+      - name: Note failed test in pull request
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'One or more dependencies have failed the security audit step: ' + context.github.server_url + '/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + context.github.run_id
+            })
+
+  build:
+    needs: audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+
+      - name: Install PHP dependencies
+        run: composer create-project
+
+      - name: Install Node dependencies
+        run: npm install
+
+      - name: Build assets
+        run: npm run build
+
+  comment-failed-build:
+    needs:
+      - audit
+      - build
+    runs-on: ubuntu-latest
+    if: ${{ needs.build.result == 'failure' }}
+    steps:
+      - name: Note failed build in pull request
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'One or more build steps have failed: ' + context.github.server_url + '/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + context.github.run_id
+            })
+
+  test:
+    needs:
+      - audit
+      - build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          lfs: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: "package.json"
+          cache-dependency-path: "package-lock.json"
+          cache: npm
+
+      - name: Install dependencies
+        run: |
+          npm install
+          composer create-project
+
+      - name: Build front-end application
+        run: npm run build
+
+      - name: Test Laravel application
+        run: php artisan test --parallel
+
+      - name: Test front-end application if necessary
+        run: npm run test --if-present
+
+  comment-failed-test:
+    needs:
+      - audit
+      - build
+      - test
+    runs-on: ubuntu-latest
+    if: ${{ needs.test.result == 'failure' }}
+    steps:
+      - name: Note failed test in pull request
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'One or more tests have failed: ' + context.github.server_url + '/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + context.github.run_id
+            })
+
+  merge:
+    needs:
+      - audit
+      - build
+      - test
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]' || github.actor == 'dependabot-preview[bot]'
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v1
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Enable auto-merge for Dependabot PRs
+        if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
