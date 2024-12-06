@@ -2,8 +2,12 @@ name: Pull Request Opened
 
 on:
   pull_request:
-    types: [opened]
-    branches: [trunk]
+    branches:
+      - trunk
+    types:
+      - opened
+      - reopened
+      - synchronize
 
 jobs:
   test:
