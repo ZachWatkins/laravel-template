@@ -13,8 +13,6 @@ jobs:
         uses: actions/checkout@v2
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.3"
       - name: Prepare test environment
         run: |
           composer create-project
@@ -46,8 +44,6 @@ jobs:
         uses: actions/checkout@v2
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.3"
       - name: Install PHP dependencies
         run: composer create-project
       - name: Install Node dependencies
