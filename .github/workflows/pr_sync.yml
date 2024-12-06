@@ -20,6 +20,7 @@ jobs:
           npm run build
       - name: Run tests
         run: php artisan test
+
   comment-failed-test:
     needs: test
     runs-on: ubuntu-latest
@@ -36,6 +37,7 @@ jobs:
               repo: context.repo.repo,
               body: 'One or more tests have failed. Please check the step that failed and address it in your pull request.'
             })
+
   build:
     needs: test
     runs-on: ubuntu-latest
@@ -50,6 +52,7 @@ jobs:
         run: npm install
       - name: Build assets
         run: npm run build
+
   comment-failed-build:
     needs: build
     runs-on: ubuntu-latest
