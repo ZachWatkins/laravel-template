@@ -12,7 +12,7 @@
             "amiralizadeh9480.laravel-extra-intellisense",
             "ms-azuretools.vscode-docker",
             "bradlc.vscode-tailwindcss",
-            "redhat.vscode-yaml",
+            "redhat.vscode-yaml"
         ]
     },
     "tasks": {
@@ -21,43 +21,52 @@
             {
                 "label": "Launch",
                 "dependsOrder": "sequence",
-                "dependsOn": [
-                    "Start Application",
-                ],
+                "dependsOn": ["Start Application"],
             },
             {
                 "label": "Start Application",
                 "type": "shell",
                 "command": "composer",
                 "args": ["run", "dev"],
+                "windows": {
+                    "args": ["run", "dev-win"]
+                }
+            },
+            {
+                "label": "Start Laravel Application (Windows)",
+                "type": "shell",
+                "command": "php",
+                "args": ["-S", "localhost:8000", "-t", "public"]
+            },
+            {
+                "label": "Start Vite Application",
+                "type": "shell",
+                "command": "npm",
+                "args": ["run", "dev"]
             },
             {
                 "label": "Git: Prune Branches Not In Origin",
                 "type": "shell",
                 "command": "./bin/gitprune",
-                "problemMatcher": [
-                    "$msCompile"
-                ],
+                "problemMatcher": ["$msCompile"],
                 "presentation": {
-                  "close": true,
-                  "revealProblems": "onProblem",
-                  "reveal": "silent"
+                    "close": true,
+                    "revealProblems": "onProblem",
+                    "reveal": "silent"
                 },
                 "windows": {
                     "options": {
                         "shell": {
-                            "executable": "C:\\Windows\\system32\\wsl.exe",
+                            "executable": "C:\\Windows\\system32\\wsl.exe"
                         }
                     }
-                },
+                }
             },
             {
                 "label": "Git: Fetch Branches Not In Local",
                 "type": "shell",
                 "command": "./bin/gitfetch",
-                "problemMatcher": [
-                    "$msCompile"
-                ],
+                "problemMatcher": ["$msCompile"],
                 "presentation": {
                     "revealProblems": "onProblem",
                     "reveal": "silent"
@@ -65,10 +74,10 @@
                 "windows": {
                     "options": {
                         "shell": {
-                            "executable": "C:\\Windows\\system32\\wsl.exe",
+                            "executable": "C:\\Windows\\system32\\wsl.exe"
                         }
                     }
-                },
+                }
             }
         ]
     },
