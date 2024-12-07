@@ -4,6 +4,7 @@ namespace Tests\Feature\Http\Controllers;
 
 use App\Models\Customer;
 use App\Models\ShoppingCart;
+
 use function Pest\Laravel\assertModelMissing;
 use function Pest\Laravel\delete;
 use function Pest\Laravel\get;
@@ -22,14 +23,12 @@ test('index displays view', function (): void {
     $response->assertViewHas('shoppingCarts');
 });
 
-
 test('create displays view', function (): void {
     $response = get(route('shopping-carts.create'));
 
     $response->assertOk();
     $response->assertViewIs('shoppingCart.create');
 });
-
 
 test('store uses form request validation')
     ->assertActionUsesFormRequest(
@@ -55,7 +54,6 @@ test('store saves and redirects', function (): void {
     $response->assertSessionHas('shoppingCart.id', $shoppingCart->id);
 });
 
-
 test('show displays view', function (): void {
     $shoppingCart = ShoppingCart::factory()->create();
 
@@ -66,7 +64,6 @@ test('show displays view', function (): void {
     $response->assertViewHas('shoppingCart');
 });
 
-
 test('edit displays view', function (): void {
     $shoppingCart = ShoppingCart::factory()->create();
 
@@ -76,7 +73,6 @@ test('edit displays view', function (): void {
     $response->assertViewIs('shoppingCart.edit');
     $response->assertViewHas('shoppingCart');
 });
-
 
 test('update uses form request validation')
     ->assertActionUsesFormRequest(
@@ -100,7 +96,6 @@ test('update redirects', function (): void {
 
     expect($customer->id)->toEqual($shoppingCart->customer_id);
 });
-
 
 test('destroy deletes and redirects', function (): void {
     $shoppingCart = ShoppingCart::factory()->create();

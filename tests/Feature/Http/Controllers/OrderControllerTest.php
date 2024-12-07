@@ -6,6 +6,7 @@ use App\Models\Currency;
 use App\Models\Customer;
 use App\Models\Locale;
 use App\Models\Order;
+
 use function Pest\Faker\fake;
 use function Pest\Laravel\get;
 use function Pest\Laravel\post;
@@ -22,7 +23,6 @@ test('index displays view', function (): void {
     $response->assertViewHas('orders');
 });
 
-
 test('store uses form request validation')
     ->assertActionUsesFormRequest(
         \App\Http\Controllers\OrderController::class,
@@ -32,8 +32,8 @@ test('store uses form request validation')
 
 test('store saves and redirects', function (): void {
     $number = fake()->numberBetween(-10000, 10000);
-    $payment_state = fake()->randomElement(['pending','paid','partially_refunded','refunded']);
-    $shipping_state = fake()->randomElement(['pending','shipped','delivered','returned']);
+    $payment_state = fake()->randomElement(['pending', 'paid', 'partially_refunded', 'refunded']);
+    $shipping_state = fake()->randomElement(['pending', 'shipped', 'delivered', 'returned']);
     $items_total = fake()->numberBetween(-10000, 10000);
     $total = fake()->randomFloat(2, 0, 100000);
     $created_by_guest = fake()->boolean();
@@ -74,7 +74,6 @@ test('store saves and redirects', function (): void {
     $response->assertRedirect(route('orders.index'));
     $response->assertSessionHas('order.id', $order->id);
 });
-
 
 test('show displays view', function (): void {
     $order = Order::factory()->create();

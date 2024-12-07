@@ -5,6 +5,7 @@ namespace Tests\Feature\Http\Controllers;
 use App\Models\Manufacturer;
 use App\Models\Part;
 use App\Models\PartType;
+
 use function Pest\Faker\fake;
 use function Pest\Laravel\assertSoftDeleted;
 use function Pest\Laravel\delete;
@@ -24,14 +25,12 @@ test('index displays view', function (): void {
     $response->assertViewHas('parts');
 });
 
-
 test('create displays view', function (): void {
     $response = get(route('parts.create'));
 
     $response->assertOk();
     $response->assertViewIs('part.create');
 });
-
 
 test('store uses form request validation')
     ->assertActionUsesFormRequest(
@@ -66,7 +65,7 @@ test('store saves and redirects', function (): void {
         'ft',
         'yd',
     ]);
-    $filename = fake()->word() . '.jpg';
+    $filename = fake()->word().'.jpg';
     $part_type = PartType::factory()->create();
     $manufacturer = Manufacturer::factory()->create();
 
@@ -107,7 +106,6 @@ test('store saves and redirects', function (): void {
     $response->assertSessionHas('part.id', $part->id);
 });
 
-
 test('show displays view', function (): void {
     $part = Part::factory()->create();
 
@@ -118,7 +116,6 @@ test('show displays view', function (): void {
     $response->assertViewHas('part');
 });
 
-
 test('edit displays view', function (): void {
     $part = Part::factory()->create();
 
@@ -128,7 +125,6 @@ test('edit displays view', function (): void {
     $response->assertViewIs('part.edit');
     $response->assertViewHas('part');
 });
-
 
 test('update uses form request validation')
     ->assertActionUsesFormRequest(
@@ -164,7 +160,7 @@ test('update redirects', function (): void {
         'ft',
         'yd',
     ]);
-    $filename = fake()->word() . '.jpg';
+    $filename = fake()->word().'.jpg';
     $part_type = PartType::factory()->create();
     $manufacturer = Manufacturer::factory()->create();
 
@@ -201,7 +197,6 @@ test('update redirects', function (): void {
     expect($part_type->id)->toEqual($part->part_type_id);
     expect($manufacturer->id)->toEqual($part->manufacturer_id);
 });
-
 
 test('destroy deletes and redirects', function (): void {
     $part = Part::factory()->create();

@@ -2,10 +2,9 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 use App\Models\Customer;
 use App\Models\CustomerPaymentMethod;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CustomerPaymentMethodFactory extends Factory
 {

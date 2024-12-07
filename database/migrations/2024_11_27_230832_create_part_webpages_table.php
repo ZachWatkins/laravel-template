@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('part_webpages', function (Blueprint $table) {
             $table->id();
-            $table->enum('status', ["active","inactive"])->default('active')->index();
+            $table->enum('status', ['active', 'inactive'])->default('active')->index();
             $table->string('path', 100);
             $table->string('title', 100);
             $table->string('meta_title', 100);

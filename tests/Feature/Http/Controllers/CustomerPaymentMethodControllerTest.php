@@ -4,6 +4,7 @@ namespace Tests\Feature\Http\Controllers;
 
 use App\Models\Customer;
 use App\Models\CustomerPaymentMethod;
+
 use function Pest\Faker\fake;
 use function Pest\Laravel\assertModelMissing;
 use function Pest\Laravel\delete;
@@ -23,14 +24,12 @@ test('index displays view', function (): void {
     $response->assertViewHas('customerPaymentMethods');
 });
 
-
 test('create displays view', function (): void {
     $response = get(route('customer-payment-methods.create'));
 
     $response->assertOk();
     $response->assertViewIs('customerPaymentMethod.create');
 });
-
 
 test('store uses form request validation')
     ->assertActionUsesFormRequest(
@@ -81,7 +80,6 @@ test('store saves and redirects', function (): void {
     $response->assertSessionHas('customerPaymentMethod.id', $customerPaymentMethod->id);
 });
 
-
 test('show displays view', function (): void {
     $customerPaymentMethod = CustomerPaymentMethod::factory()->create();
 
@@ -92,7 +90,6 @@ test('show displays view', function (): void {
     $response->assertViewHas('customerPaymentMethod');
 });
 
-
 test('edit displays view', function (): void {
     $customerPaymentMethod = CustomerPaymentMethod::factory()->create();
 
@@ -102,7 +99,6 @@ test('edit displays view', function (): void {
     $response->assertViewIs('customerPaymentMethod.edit');
     $response->assertViewHas('customerPaymentMethod');
 });
-
 
 test('update uses form request validation')
     ->assertActionUsesFormRequest(
@@ -150,7 +146,6 @@ test('update redirects', function (): void {
     expect($zip_code)->toEqual($customerPaymentMethod->zip_code);
     expect($customer->id)->toEqual($customerPaymentMethod->customer_id);
 });
-
 
 test('destroy deletes and redirects', function (): void {
     $customerPaymentMethod = CustomerPaymentMethod::factory()->create();

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class DownloadController extends Controller
 {
@@ -17,8 +17,8 @@ class DownloadController extends Controller
         $filename = $request->input('file');
         $source = "user/{$user_id}/{$filename}";
 
-        if (!Storage::exists($source)) {
-            return response()->json(['error' => 'File not found:' . $request->input('file')], 404);
+        if (! Storage::exists($source)) {
+            return response()->json(['error' => 'File not found:'.$request->input('file')], 404);
         }
 
         return response()

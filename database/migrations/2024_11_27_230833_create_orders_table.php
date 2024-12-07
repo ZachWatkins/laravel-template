@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->integer('number')->default(1)->index();
-            $table->enum('payment_state', ["pending","paid","partially_refunded","refunded"])->default('pending');
-            $table->enum('shipping_state', ["pending","shipped","delivered","returned"])->default('pending');
+            $table->enum('payment_state', ['pending', 'paid', 'partially_refunded', 'refunded'])->default('pending');
+            $table->enum('shipping_state', ['pending', 'shipped', 'delivered', 'returned'])->default('pending');
             $table->integer('items_total');
             $table->decimal('total', 10, 2);
             $table->string('token_value', 255)->nullable();
