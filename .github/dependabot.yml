@@ -4,12 +4,13 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    ignore:
+      - dependency-name: "laravel*"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "daily"
-ignore:
-  - dependency-name: "react*"
-    update-types: ["version-update:semver-major"]
-  - dependency-name: "laravel*"
-    update-types: ["version-update:semver-major"]
+    ignore:
+      - dependency-name: "react*"
+        update-types: ["version-update:semver-major"]
