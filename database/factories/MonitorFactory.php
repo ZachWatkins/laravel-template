@@ -2,9 +2,8 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 use App\Models\Monitor;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class MonitorFactory extends Factory
 {

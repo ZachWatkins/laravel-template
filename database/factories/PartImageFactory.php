@@ -2,10 +2,9 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 use App\Models\Part;
 use App\Models\PartImage;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PartImageFactory extends Factory
 {
@@ -22,7 +21,7 @@ class PartImageFactory extends Factory
     public function definition(): array
     {
         return [
-            'type' => $this->faker->randomElement(["thumbnail","main","additional"]),
+            'type' => $this->faker->randomElement(['thumbnail', 'main', 'additional']),
             'path' => $this->faker->regexify('[A-Za-z0-9]{255}'),
             'part_id' => Part::factory(),
         ];

@@ -16,20 +16,21 @@ class DeleteFilesBeforeDate implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable;
 
     protected int $date;
+
     protected $disk;
 
     /**
      * Delete files with a given disk, optionally within a path prefix, before a given date.
      *
-     * @param string     $diskName Disk to search in.
-     * @param int|string $date     Date to search before.
-     * @param string     $prefix   Path prefix for files to search for.
+     * @param  string  $diskName  Disk to search in.
+     * @param  int|string  $date  Date to search before.
+     * @param  string  $prefix  Path prefix for files to search for.
      */
     public function __construct(
         protected string $diskName,
         int|string $date = 'now',
         protected string $prefix = ''
-    ){
+    ) {
         $this->date = is_string($date) ? strtotime($date) : $date;
     }
 
@@ -46,8 +47,6 @@ class DeleteFilesBeforeDate implements ShouldQueue
 
     /**
      * Get the files to delete in a memory-friendly way.
-     *
-     * @return \Generator
      */
     private function files(): \Generator
     {

@@ -2,21 +2,21 @@
 
 namespace App\Listeners;
 
-use App\Models\User;
 use App\Models\AuthEvent;
-use Illuminate\Events\Dispatcher;
-use Illuminate\Auth\Events\Login;
-use Illuminate\Auth\Events\Logout;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Auth\Events\PasswordReset;
+use App\Models\User;
 use Illuminate\Auth\Events\Attempting;
 use Illuminate\Auth\Events\Authenticated;
+use Illuminate\Auth\Events\CurrentDeviceLogout;
 use Illuminate\Auth\Events\Failed;
+use Illuminate\Auth\Events\Lockout;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Logout;
+use Illuminate\Auth\Events\OtherDeviceLogout;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Auth\Events\Verified;
-use Illuminate\Auth\Events\Lockout;
-use Illuminate\Auth\Events\CurrentDeviceLogout;
-use Illuminate\Auth\Events\OtherDeviceLogout;
+use Illuminate\Events\Dispatcher;
 
 class UserEventSubscriber
 {
@@ -42,7 +42,7 @@ class UserEventSubscriber
     {
         $user = User::find((int) $event->user->getAuthIdentifier());
 
-        if (!$user) {
+        if (! $user) {
             throw new \Exception('User not found');
         }
 
@@ -61,7 +61,7 @@ class UserEventSubscriber
 
     public function attempting(Attempting $event): void
     {
-        if (!User::where('email', $event->credentials['email'])->exists()) {
+        if (! User::where('email', $event->credentials['email'])->exists()) {
             return;
         }
 

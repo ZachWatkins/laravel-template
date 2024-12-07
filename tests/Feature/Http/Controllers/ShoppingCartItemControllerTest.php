@@ -5,6 +5,7 @@ namespace Tests\Feature\Http\Controllers;
 use App\Models\Part;
 use App\Models\ShoppingCart;
 use App\Models\ShoppingCartItem;
+
 use function Pest\Faker\fake;
 use function Pest\Laravel\assertModelMissing;
 use function Pest\Laravel\delete;
@@ -24,14 +25,12 @@ test('index displays view', function (): void {
     $response->assertViewHas('shoppingCartItems');
 });
 
-
 test('create displays view', function (): void {
     $response = get(route('shopping-cart-items.create'));
 
     $response->assertOk();
     $response->assertViewIs('shoppingCartItem.create');
 });
-
 
 test('store uses form request validation')
     ->assertActionUsesFormRequest(
@@ -66,7 +65,6 @@ test('store saves and redirects', function (): void {
     $response->assertSessionHas('shoppingCartItem.id', $shoppingCartItem->id);
 });
 
-
 test('show displays view', function (): void {
     $shoppingCartItem = ShoppingCartItem::factory()->create();
 
@@ -77,7 +75,6 @@ test('show displays view', function (): void {
     $response->assertViewHas('shoppingCartItem');
 });
 
-
 test('edit displays view', function (): void {
     $shoppingCartItem = ShoppingCartItem::factory()->create();
 
@@ -87,7 +84,6 @@ test('edit displays view', function (): void {
     $response->assertViewIs('shoppingCartItem.edit');
     $response->assertViewHas('shoppingCartItem');
 });
-
 
 test('update uses form request validation')
     ->assertActionUsesFormRequest(
@@ -120,7 +116,6 @@ test('update redirects', function (): void {
     expect($shopping_cart->id)->toEqual($shoppingCartItem->shopping_cart_id);
     expect($part->id)->toEqual($shoppingCartItem->part_id);
 });
-
 
 test('destroy deletes and redirects', function (): void {
     $shoppingCartItem = ShoppingCartItem::factory()->create();
