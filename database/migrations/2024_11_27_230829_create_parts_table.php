@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('parts', function (Blueprint $table) {
             $table->id();
-            $table->enum('status', ["active","inactive"])->default('active')->index();
+            $table->enum('status', ['active', 'inactive'])->default('active')->index();
             $table->string('number', 100)->index();
             $table->string('name', 100);
             $table->string('sku', 100);

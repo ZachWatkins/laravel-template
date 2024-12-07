@@ -2,12 +2,12 @@
 
 use Illuminate\Support\Facades\DB;
 
-if (!function_exists('delete_files_before')) {
+if (! function_exists('delete_files_before')) {
     /**
      * Delete files before a given date, optionally within a given path pattern.
-     * @param int|string $date     Date to search before.
-     * @param string     $pathLike Path pattern for files to search in.
-     * @return void
+     *
+     * @param  int|string  $date  Date to search before.
+     * @param  string  $pathLike  Path pattern for files to search in.
      */
     function delete_files_before(int|string $date, string $pathLike = ''): void
     {
@@ -26,7 +26,9 @@ if (!function_exists('delete_files_before')) {
 trait SetsPdoTimeout
 {
     private static string $pdo_timeout_config_key;
+
     private static string $pdo_timeout_attribute;
+
     private static $pdo_timeout_config_original;
 
     private static function setPdoTimeout(int $value = -1)
@@ -47,12 +49,13 @@ trait SetsPdoTimeout
             return self::$pdo_timeout_config_key;
         }
         $connection = config('database.default');
-        self::$pdo_timeout_config_key = 'database.connections.' . $connection . '.options.' . constant(self::getTimeoutAttrName());
+        self::$pdo_timeout_config_key = 'database.connections.'.$connection.'.options.'.constant(self::getTimeoutAttrName());
         $config_value = config(self::$pdo_timeout_config_key);
-        if (!is_numeric($config_value) || 0 > $config_value) {
+        if (! is_numeric($config_value) || $config_value < 0) {
             $config_value = 0;
         }
         self::$pdo_timeout_config_original = $config_value;
+
         return self::$pdo_timeout_config_key;
     }
 
@@ -67,7 +70,7 @@ trait SetsPdoTimeout
             'PDO::ATTR_TIMEOUT',
         ];
         foreach ($timeout_attrs as $attribute) {
-            if (!defined($attribute) || null === constant($attribute)) {
+            if (! defined($attribute) || constant($attribute) === null) {
                 continue;
             }
             try {
@@ -76,12 +79,14 @@ trait SetsPdoTimeout
                     $value = DB::connection()->getPdo()->getAttribute(constant($attribute));
                     DB::connection()->getPdo()->setAttribute($attribute, $value + 1);
                     DB::connection()->getPdo()->setAttribute($attribute, $value);
+
                     return self::$pdo_timeout_attribute = $attribute;
                 }
             } catch (\PDOException $e) {
                 continue;
             }
         }
+
         return self::$pdo_timeout_attribute = 'PDO::TIMEOUT_ATTR_UNDEFINED';
     }
 }
@@ -95,9 +100,8 @@ class Retryable_Query
      *
      * @author  Zachary K. Watkins <zwatkins.it@gmail.com>
      *
-     * @param callable $callable A callable function which includes a query.
-     * @param integer  $timeout  A parameter.
-     *
+     * @param  callable  $callable  A callable function which includes a query.
+     * @param  int  $timeout  A parameter.
      * @return void
      */
     public static function handle(callable $callable, int $timeout = -1)
@@ -106,9 +110,10 @@ class Retryable_Query
         try {
             $result = $callable();
             self::setPdoTimeout();
+
             return $result;
         } catch (\PDOException $exception) {
-            if (!self::canRetry($exception) || !self::reconnect()) {
+            if (! self::canRetry($exception) || ! self::reconnect()) {
                 throw $exception;
             }
         }
@@ -118,6 +123,7 @@ class Retryable_Query
             $wait_ms = [5000, 8000, 15000, 30000, 60000];
             $timeout_sec = [10, 15, 20, 30, 60];
             self::setPdoTimeout($timeout_sec[$attempt - 1] * $jitter);
+
             return $wait_ms[$attempt - 1] * $jitter;
         };
 
@@ -132,13 +138,11 @@ class Retryable_Query
      * Attempt to reconnect to the database if an exception is retryable.
      *
      * @author Zachary K. Watkins <zwatkins.it@gmail.com>
-     *
-     * @return bool
      */
     private static function reconnect(): bool
     {
         $i = 0;
-        $reconnector = function() use (&$i) {
+        $reconnector = function () use (&$i) {
             $j = $i++;
             $reconnect_timeout_sec = [25, 30, 45, 60, 120];
             $reconnect_wait_sec = [5, 10, 15, 30, 60];
@@ -147,6 +151,7 @@ class Retryable_Query
             sleep($reconnect_wait_sec[$j]);
             DB::reconnect();
             self::setPdoTimeout();
+
             return true;
         };
 
@@ -154,6 +159,7 @@ class Retryable_Query
             return retry(6, $reconnector, 0, fn ($exception) => self::canRetry($exception));
         } catch (\PDOException $exception) {
             self::setPdoTimeout();
+
             return false;
         }
     }
@@ -163,8 +169,7 @@ class Retryable_Query
      *
      * @author Zachary K. Watkins <zwatkins.it@gmail.com>
      *
-     * @param \PDOException $exception The thrown exception.
-     *
+     * @param  \PDOException  $exception  The thrown exception.
      * @return bool Whether the query can be retried.
      */
     private static function canRetry(\PDOException $exception): bool
@@ -175,14 +180,15 @@ class Retryable_Query
         $subcode = (string) $exception->errorInfo[1];
         $message = $exception->getMessage();
         if (isset($retryable[$code])) {
-            if (true === $retryable[$code] || in_array($subcode, $retryable, true)) {
+            if ($retryable[$code] === true || in_array($subcode, $retryable, true)) {
                 return true;
             }
-        } elseif (false !== strpos($message, 'nable to connect')) {
+        } elseif (strpos($message, 'nable to connect') !== false) {
             return true;
-        } elseif (false !== strpos($message, 'onnection timed out')) {
+        } elseif (strpos($message, 'onnection timed out') !== false) {
             return true;
         }
+
         return false;
     }
 }

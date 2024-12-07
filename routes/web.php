@@ -26,7 +26,6 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
-
 Route::resource('parts', App\Http\Controllers\PartController::class);
 
 Route::resource('part-webpages', App\Http\Controllers\PartWebpageController::class);

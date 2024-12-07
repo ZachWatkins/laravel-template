@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Jobs\ImportModel;
 use App\Models\Location;
 use App\Models\User;
+use Illuminate\Http\Request;
 
 class ImportController extends Controller
 {
@@ -16,7 +16,7 @@ class ImportController extends Controller
     {
         $file = $request->input('file');
         $user = auth()->user();
-        if (!$user) {
+        if (! $user) {
             // Test mode.
             $example = User::factory()->example()->make();
             $user = User::where('name', $example->name)->first();
