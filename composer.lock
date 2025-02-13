@@ -1130,16 +1130,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v11.42.0",
+            "version": "v11.42.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "006375ba67e830e87daa7b52ab65163ba3508d26"
+                "reference": "ff392f42f6c55cc774ce75553a11c6b031da67f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/006375ba67e830e87daa7b52ab65163ba3508d26",
-                "reference": "006375ba67e830e87daa7b52ab65163ba3508d26",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/ff392f42f6c55cc774ce75553a11c6b031da67f8",
+                "reference": "ff392f42f6c55cc774ce75553a11c6b031da67f8",
                 "shasum": ""
             },
             "require": {
@@ -1341,7 +1341,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2025-02-11T17:17:56+00:00"
+            "time": "2025-02-12T20:58:18+00:00"
         },
         {
             "name": "laravel/prompts",
@@ -6191,20 +6191,20 @@
         },
         {
             "name": "jasonmccreary/laravel-test-assertions",
-            "version": "v2.5.0",
+            "version": "v2.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jasonmccreary/laravel-test-assertions.git",
-                "reference": "185a3ad9699505c53b7466a1dfa73a76d8daeeee"
+                "reference": "f87707d4520246c8628dce4d5c23f6d72fd5f8d9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jasonmccreary/laravel-test-assertions/zipball/185a3ad9699505c53b7466a1dfa73a76d8daeeee",
-                "reference": "185a3ad9699505c53b7466a1dfa73a76d8daeeee",
+                "url": "https://api.github.com/repos/jasonmccreary/laravel-test-assertions/zipball/f87707d4520246c8628dce4d5c23f6d72fd5f8d9",
+                "reference": "f87707d4520246c8628dce4d5c23f6d72fd5f8d9",
                 "shasum": ""
             },
             "require": {
-                "illuminate/testing": "^10.0|^11.0|^12.0",
+                "illuminate/testing": "^11.0|^12.0",
                 "mockery/mockery": "^1.4.4",
                 "php": "^8.1",
                 "phpunit/phpunit": "^10.1|^11.0"
@@ -6235,9 +6235,9 @@
             "description": "A set of helpful assertions when testing Laravel applications.",
             "support": {
                 "issues": "https://github.com/jasonmccreary/laravel-test-assertions/issues",
-                "source": "https://github.com/jasonmccreary/laravel-test-assertions/tree/v2.5.0"
+                "source": "https://github.com/jasonmccreary/laravel-test-assertions/tree/v2.6.0"
             },
-            "time": "2025-02-11T16:56:31+00:00"
+            "time": "2025-02-13T01:16:32+00:00"
         },
         {
             "name": "jean85/pretty-package-versions",
