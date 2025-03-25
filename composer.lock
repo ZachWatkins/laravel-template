@@ -6178,16 +6178,16 @@
         },
         {
             "name": "jasonmccreary/laravel-test-assertions",
-            "version": "v2.7.0",
+            "version": "v2.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jasonmccreary/laravel-test-assertions.git",
-                "reference": "b372dfe08ea307ead1623916a3a5a14a3ad617d7"
+                "reference": "da06c669b5af1ed002c1636fbc01be23c07682c1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jasonmccreary/laravel-test-assertions/zipball/b372dfe08ea307ead1623916a3a5a14a3ad617d7",
-                "reference": "b372dfe08ea307ead1623916a3a5a14a3ad617d7",
+                "url": "https://api.github.com/repos/jasonmccreary/laravel-test-assertions/zipball/da06c669b5af1ed002c1636fbc01be23c07682c1",
+                "reference": "da06c669b5af1ed002c1636fbc01be23c07682c1",
                 "shasum": ""
             },
             "require": {
@@ -6222,9 +6222,9 @@
             "description": "A set of helpful assertions when testing Laravel applications.",
             "support": {
                 "issues": "https://github.com/jasonmccreary/laravel-test-assertions/issues",
-                "source": "https://github.com/jasonmccreary/laravel-test-assertions/tree/v2.7.0"
+                "source": "https://github.com/jasonmccreary/laravel-test-assertions/tree/v2.7.1"
             },
-            "time": "2025-03-24T17:22:36+00:00"
+            "time": "2025-03-25T12:42:35+00:00"
         },
         {
             "name": "jean85/pretty-package-versions",
